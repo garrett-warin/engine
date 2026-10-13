@@ -36,6 +36,7 @@
     "glob": "^13.0.6",
     "ts-checker-rspack-plugin": "^1.1.6",
     "tsc-alias": "^1.8.16",
+    "typescript": "5.9.3",
     "vite": "^7.3.0"
   },
   "dependencies": {

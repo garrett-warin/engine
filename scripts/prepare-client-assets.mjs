@@ -1,5 +1,6 @@
 import { copyFile, readFile, readdir, writeFile } from "node:fs/promises";
 import path from "node:path";
+import { fileURLToPath } from "node:url";
 
 const replacements = [
   [/SCRAMJET/g, "RUNTIMEKIT"],
@@ -47,7 +48,7 @@ const replacements = [
   [/\/~\/sj\//g, "/~/app/"],
 ];
 
-async function sanitize(source, destination) {
+export async function sanitize(source, destination) {
   let content = await readFile(source, "utf8");
   const payloads = [];
   content = content.replace(
@@ -83,6 +84,14 @@ async function sanitize(source, destination) {
   await writeFile(destination, content);
 }
 
+export async function prepareAssets(bootstrapOnly = false) {
+  if (bootstrapOnly) {
+    await sanitize("packages/bootstrap/dist/bootstrap-client.js", "app/vendor/bootstrap-client.js");
+    const artifact = await readFile("app/vendor/bootstrap-client.js", "utf8");
+    if (/scramjet|scram|wisp|bare|libcurl|epoxy|ultraviolet|__uv/i.test(artifact)) throw Error("Bootstrap artifact contains a legacy implementation name");
+    console.log("BOOTSTRAP_ASSET_PREPARED");
+    return;
+  }
 const store = "node_modules/.pnpm";
 const packageDirectory = (await readdir(store)).find((name) =>
   name.startsWith("@mercuryworkshop+libcurl-transport@"),
@@ -161,3 +170,6 @@ for (const file of responseFiles) {
 }
 
 console.log("CLIENT_ASSETS_PREPARED blacklist_occurrences=0");
+
+}
+if (process.argv[1] && path.resolve(process.argv[1]) === fileURLToPath(import.meta.url)) await prepareAssets(process.argv.includes("--bootstrap-only"));

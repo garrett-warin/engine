@@ -1,5 +1,5 @@
 import { Object_entries, Object_keys, _URL, Error } from "@/shared/snapshot";
-import { unrewriteUrl, URLMeta } from "@rewriters/url";
+import { unrewriteUrl, parseImportMapRoute, URLMeta } from "@rewriters/url";
 import {
 	RuntimeKitFetchHandler,
 	RuntimeKitFetchParsed,
@@ -61,6 +61,10 @@ export function parseRequest(
 ): RuntimeKitFetchParsed {
 	const strippedUrl = new _URL(request.rawUrl.href);
 	const { params, extras } = parseQueryParams(request.rawUrl.searchParams);
+	const moduleRoute = parseImportMapRoute(request.rawUrl, handler.context);
+	if (moduleRoute) {
+		Object.assign(params, parseQueryParams(new URLSearchParams(moduleRoute.params)).params);
+	}
 	strippedUrl.search = "";
 
 	const hadExtraParams = Object_keys(extras).length > 0;

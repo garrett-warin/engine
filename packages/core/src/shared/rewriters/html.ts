@@ -400,7 +400,7 @@ function traverseParsedHtml(
 				for (const key in map.imports) {
 					let url = map.imports[key];
 					if (typeof url === "string") {
-						url = rewriteUrl(url, context, meta, { isModule: true });
+						url = rewriteUrl(url, context, meta, { isModule: true, importMapPrefix: key.endsWith("/") && url.endsWith("/") });
 						map.imports[key] = url;
 					}
 				}

@@ -389,6 +389,7 @@ const createRuntimeKitConfig = (options: RuntimeKitBuildConfig) => {
       }),
       new rspack.DefinePlugin({
         COMMITHASH: (() => {
+          if (process.env.BUILD_SOURCE_COMMIT) return JSON.stringify(process.env.BUILD_SOURCE_COMMIT);
           try {
             const hash = JSON.stringify(
               execSync("git rev-parse --short HEAD", {
@@ -403,7 +404,7 @@ const createRuntimeKitConfig = (options: RuntimeKitBuildConfig) => {
         })(),
       }),
       new rspack.DefinePlugin({
-        BUILDDATE: JSON.stringify(new Date().toISOString()),
+        BUILDDATE: JSON.stringify(new Date(process.env.SOURCE_DATE_EPOCH ? Number(process.env.SOURCE_DATE_EPOCH) * 1000 : Date.now()).toISOString()),
       }),
     ],
     target: "webworker",

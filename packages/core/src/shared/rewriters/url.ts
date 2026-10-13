@@ -20,6 +20,7 @@ export type NavigationType = "user" | "link" | "location";
 export type RewriteUrlOptions = {
 	referrerPolicy?: string;
 	isModule?: boolean;
+	importMapPrefix?: boolean;
 	navigateType?: NavigationType;
 	topFrame?: string;
 	parentFrame?: string;
@@ -199,6 +200,15 @@ export function rewriteUrl(
 		let paramstring = "";
 		if (paramsInit.toString()) paramstring = "?" + paramsInit.toString();
 
+		// Native import-map prefix addresses must end in a literal slash.
+		// Keep the route metadata in path segments, so the browser can append
+		// the module suffix without appending it to a query parameter.
+		if (options?.importMapPrefix && realUrl.href.endsWith("/")) {
+			return context.prefix.href + "~module/" +
+				context.interface.codecEncode(realUrl.href) + "/" +
+				context.interface.codecEncode(paramsInit.toString()) + "/";
+		}
+
 		return (
 			context.prefix.href +
 			context.interface.codecEncode(realUrl.href) +
@@ -239,6 +249,10 @@ export function unrewriteUrl(url: string | URL, context: RuntimeKitContext) {
 			dbg.error("unrewriteurl: unexpected url", url);
 			return url;
 		}
+		const moduleRoute = parseImportMapRoute(realUrl, context);
+		if (moduleRoute) {
+			return new _URL(moduleRoute.suffix + realUrl.search + realUrl.hash, moduleRoute.base).href;
+		}
 		const decodedHash = context.interface.codecDecode(realUrl.hash.slice(1));
 		const realHash = decodedHash ? "#" + decodedHash : "";
 		realUrl.hash = "";
@@ -255,4 +269,22 @@ export function unrewriteUrl(url: string | URL, context: RuntimeKitContext) {
 		dbg.error("unrewriteurl: unexpected url", url);
 		return url;
 	}
+}
+
+export function parseImportMapRoute(url: URL, context: RuntimeKitContext) {
+	const prefix = context.prefix.href + "~module/";
+	if (!String_startsWith(url.href, prefix)) return null;
+	const path = url.pathname.slice(new _URL(prefix).pathname.length);
+	const baseEnd = path.indexOf("/");
+	const paramsEnd = path.indexOf("/", baseEnd + 1);
+	if (baseEnd <= 0 || paramsEnd <= baseEnd) throw new Error("Invalid module prefix route");
+	const base = context.interface.codecDecode(path.slice(0, baseEnd));
+	const target = new _URL(base);
+	if (!/^https?:$/.test(target.protocol) || target.username || target.password || !base.endsWith("/"))
+		throw new Error("Invalid module prefix address");
+	return {
+		base,
+		params: context.interface.codecDecode(path.slice(baseEnd + 1, paramsEnd)),
+		suffix: path.slice(paramsEnd + 1),
+	};
 }

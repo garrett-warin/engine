@@ -139,6 +139,7 @@ export function parseRequest(
 		fetchInitiatorOrigin: params.initiatorOrigin || undefined,
 		// TODO: should really just be a boolean
 		fetchCredentialsInclude: params.credentials === "include",
+		fetchCredentials: ["omit", "same-origin", "include"].includes(params.credentials) ? params.credentials as RequestCredentials : undefined,
 		fetchMode,
 		destination,
 		isIframe: params.isIframe === "1",

@@ -48,6 +48,7 @@ export interface RuntimeKitFetchParsed {
 
 	// was the request made with credentials=include?
 	fetchCredentialsInclude?: boolean;
+	fetchCredentials?: RequestCredentials;
 
 	// tracks RequestInit.mode if set
 	fetchMode?: RuntimeKitRequestMode;

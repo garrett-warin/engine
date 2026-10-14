@@ -301,6 +301,7 @@ async function handleCookies(
 	parsed: RuntimeKitFetchParsed,
 	rawHeaders: RawHeaders
 ) {
+	if (parsed.fetchCredentials === "omit" || (parsed.fetchCredentials === "same-origin" && parsed.clientUrl?.origin !== parsed.url.origin)) return;
 	const cookies = [];
 
 	for (const [key, value] of rawHeaders) {

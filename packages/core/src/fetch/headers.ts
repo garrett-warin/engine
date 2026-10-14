@@ -158,7 +158,9 @@ export function rewriteRequestHeaders(
 		sameSiteContext
 	);
 
-	if (cookies.length) {
+	if (parsed.fetchCredentials === "omit" || (parsed.fetchCredentials === "same-origin" && originUrl?.origin !== parsed.url.origin)) {
+		headers.delete("Cookie");
+	} else if (cookies.length) {
 		headers.set("Cookie", cookies);
 	}
 
@@ -285,6 +287,7 @@ function requestIncludesCredentials(
 	request: RuntimeKitFetchRequest,
 	parsed: RuntimeKitFetchParsed
 ): boolean {
+	if (parsed.fetchCredentials === "omit") return false;
 	if (parsed.fetchCredentialsInclude) return true;
 	const dest = parsed.destination;
 	// fetch(): destination is "" (empty). XHR / report: destination is

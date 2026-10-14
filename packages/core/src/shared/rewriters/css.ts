@@ -37,7 +37,7 @@ function handleCss(
 			const url = doubleQuotedUrl ?? singleQuotedUrl ?? unquotedUrl;
 			const encodedUrl =
 				type === "rewrite"
-					? rewriteUrl(url.trim(), context, meta!)
+					? url.trim().startsWith("#") ? url.trim() : rewriteUrl(url.trim(), context, meta!, { nativeFragment: true })
 					: unrewriteUrl(url.trim(), context);
 
 			return match.replace(url, encodedUrl);

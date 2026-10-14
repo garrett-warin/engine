@@ -143,7 +143,7 @@ export const htmlRules: {
 		fn: (value, context, meta) => {
 			// #id values are not rewritten
 			if (value.startsWith("#")) return value;
-			return rewriteUrl(value, context, meta);
+			return rewriteUrl(value, context, meta, { nativeFragment: true });
 		},
 		href: [
 			"use",
@@ -160,5 +160,6 @@ export const htmlRules: {
 			"pattern",
 			"filter",
 		],
+		"xlink:href": ["use", "textpath", "mpath", "feimage", "animate", "animatemotion", "animatetransform", "set", "discard", "lineargradient", "radialgradient", "pattern", "filter"],
 	},
 ];

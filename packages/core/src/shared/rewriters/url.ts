@@ -21,6 +21,8 @@ export type RewriteUrlOptions = {
 	referrerPolicy?: string;
 	isModule?: boolean;
 	importMapPrefix?: boolean;
+	// SVG symbols/CSS fragment resources use the document's literal native ID.
+	nativeFragment?: boolean;
 	navigateType?: NavigationType;
 	topFrame?: string;
 	parentFrame?: string;
@@ -171,7 +173,9 @@ export function rewriteUrl(
 			return url;
 		}
 
-		const encodedHash = context.interface.codecEncode(realUrl.hash.slice(1));
+		const encodedHash = options?.nativeFragment
+			? realUrl.hash.slice(1)
+			: context.interface.codecEncode(realUrl.hash.slice(1));
 		const realHash = encodedHash ? "#" + encodedHash : "";
 		realUrl.hash = "";
 
@@ -181,6 +185,7 @@ export function rewriteUrl(
 			!options?.isModule && (options?.referrerPolicy ?? meta.referrerPolicy);
 		if (referrerPolicy) paramsInit.set(QP.referrerPolicy, referrerPolicy);
 		if (options?.isModule) paramsInit.set(QP.isModule, "module");
+		if (options?.nativeFragment && encodedHash) paramsInit.set(QP.nativeFragment, "1");
 		if (options?.topFrame) paramsInit.set(QP.topFrame, options.topFrame);
 		if (options?.parentFrame)
 			paramsInit.set(QP.parentFrame, options.parentFrame);
@@ -253,7 +258,9 @@ export function unrewriteUrl(url: string | URL, context: RuntimeKitContext) {
 		if (moduleRoute) {
 			return new _URL(moduleRoute.suffix + realUrl.search + realUrl.hash, moduleRoute.base).href;
 		}
-		const decodedHash = context.interface.codecDecode(realUrl.hash.slice(1));
+		const decodedHash = realUrl.searchParams.get(QP.nativeFragment) === "1"
+			? realUrl.hash.slice(1)
+			: context.interface.codecDecode(realUrl.hash.slice(1));
 		const realHash = decodedHash ? "#" + decodedHash : "";
 		realUrl.hash = "";
 		realUrl.search = "";

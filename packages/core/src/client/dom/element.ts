@@ -374,7 +374,7 @@ export default function (client: RuntimeKitClient, self: typeof window) {
 			return unrewriteUrl(href, client.context);
 		},
 		set(ctx, val: string) {
-			ctx.set(client.rewriteUrl(val));
+			ctx.set(val.startsWith("#") ? val : client.rewriteUrl(val, { nativeFragment: true }));
 		},
 	});
 	client.Trap("SVGAnimatedString.prototype.animVal", {

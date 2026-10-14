@@ -11,6 +11,7 @@ export const QP = {
 	referrerPolicy: "$rfp",
 	referrerSource: "$rfs",
 	isModule: "$module",
+	nativeFragment: "$nf",
 	topFrame: "$tf",
 	parentFrame: "$pf",
 	isIframe: "$iframe",
@@ -66,6 +67,7 @@ export function parseRequest(
 		Object.assign(params, parseQueryParams(new URLSearchParams(moduleRoute.params)).params);
 	}
 	strippedUrl.search = "";
+	if (params.nativeFragment === "1") strippedUrl.searchParams.set(QP.nativeFragment, "1");
 
 	const hadExtraParams = Object_keys(extras).length > 0;
 

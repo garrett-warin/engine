@@ -611,8 +611,10 @@ where
 		if let Some(source) = &it.source {
 			self.rewrite_url(source, true);
 		}
-		audit_skip!(it.declaration, "export {x} is safe because you can only export locals, which the only unsafe `top/parent` obviously can't be");
-		audit_skip!(it.specifiers, "export {x as y} is safe because you can only export locals");
+		// Exported declarations still execute arbitrary code. In particular,
+		// Rspack's exported module factory object contains dynamic imports and
+		// browser globals that need the same rewrites as non-exported code.
+		walk::walk_export_named_declaration(self, it);
 	}
 
 	#[coverage_checked(TryStatement)]

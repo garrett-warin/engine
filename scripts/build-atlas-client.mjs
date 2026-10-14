@@ -1,12 +1,12 @@
-// Rebuild JavaScript-only changes against the committed matching WASM/glue.
-// Rust/WASM sources and binary are unchanged by this release.
+// Rebuild JavaScript against the committed matching WASM/glue.
+// Rust changes first use build-atlas-wasm.mjs to update both binary and glue.
 import { cp, mkdir, readFile } from "node:fs/promises";
 import { createHash } from "node:crypto";
 import { execFileSync } from "node:child_process";
 import { sanitize, prepareAssets } from "./prepare-client-assets.mjs";
 const wasm = await readFile("app/vendor/runtimekit.wasm");
 const hash = createHash("sha256").update(wasm).digest("hex");
-if (hash !== "ab66f90ecb60b6923655d47c2a4b95c5066819a2e5caf0d6798a00f55a148ef7") throw Error("Matching WASM required");
+if (hash !== "70445fc746f539eee672f99c534b217f4d71c95cfd5422fbb9b7be7e40d4815f") throw Error("Matching WASM required");
 await mkdir("packages/core/dist", { recursive: true });
 await cp("app/vendor/runtimekit.wasm", "packages/core/dist/runtimekit.wasm");
 await cp("app/build-support/wasm", "packages/core/rewriter/wasm/out", { recursive: true });

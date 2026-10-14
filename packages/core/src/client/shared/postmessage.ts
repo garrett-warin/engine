@@ -5,6 +5,23 @@ import { Object_defineProperty } from "@/shared/snapshot";
 import { POLLUTANT } from "./realm";
 
 export default function (client: RuntimeKitClient, self: Self) {
+	const markNativeTransfers = (transfer: unknown) => {
+		if (!Array.isArray(transfer)) return;
+		for (const item of transfer) {
+			if (!(item instanceof self.MessagePort)) continue;
+			client.nativeMessagePorts.add(item);
+			const peer = client.nativePortPeers.get(item);
+			if (peer) client.nativeMessagePorts.add(peer);
+		}
+	};
+	client.Proxy("MessageChannel", {
+		construct(ctx) {
+			const channel = ctx.call();
+			client.nativePortPeers.set(channel.port1, channel.port2);
+			client.nativePortPeers.set(channel.port2, channel.port1);
+			ctx.return(channel);
+		},
+	});
 	if (iswindow)
 		client.Proxy("window.postMessage", {
 			apply(ctx) {
@@ -91,6 +108,10 @@ export default function (client: RuntimeKitClient, self: Self) {
 
 	client.Proxy(toproxy, {
 		apply(ctx) {
+			if (client.nativeMessagePorts.has(ctx.this)) {
+				markNativeTransfers(ctx.args[1]);
+				return;
+			}
 			// origin/source doesn't need to be preserved - it's null in the message event
 
 			ctx.args[0] = {
@@ -102,6 +123,12 @@ export default function (client: RuntimeKitClient, self: Self) {
 	Object_defineProperty(self, client.config.globals.wrappostmessagefn, {
 		value: function (obj: any) {
 			if (!obj || typeof obj.postMessage !== "function") return obj;
+			if (client.nativeOpaqueWindows.has(obj)) return {
+				postMessage: (...args: any[]) => {
+					markNativeTransfers(args[2] ?? (typeof args[1] === "object" ? args[1]?.transfer : undefined));
+					return obj.postMessage(...args);
+				},
+			};
 			return {
 				postMessage: obj.postMessage.bind(obj),
 			};

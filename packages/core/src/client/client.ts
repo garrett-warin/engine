@@ -224,6 +224,10 @@ export class RuntimeKitClient {
 	history: TrackedHistoryState[];
 
 	private flagCache = new _Map<keyof RuntimeKitConfig["flags"], boolean>();
+	// Channels crossing an explicitly reviewed native opaque frame boundary.
+	nativeMessagePorts = new WeakSet<MessagePort>();
+	nativePortPeers = new WeakMap<MessagePort, MessagePort>();
+	nativeOpaqueWindows = new WeakSet<Window>();
 
 	hooks = {
 		rewriter: {

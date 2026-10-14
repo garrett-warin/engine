@@ -15,6 +15,9 @@ export default function (client: RuntimeKitClient, self: Self) {
 	const handlers = {
 		message: {
 			_init() {
+				if (client.nativeMessagePorts.has(this.currentTarget)) {
+					for (const port of this.ports) client.nativeMessagePorts.add(port);
+				}
 				if (client.init.shouldBlockMessageEvent?.(this)) {
 					return false;
 				}

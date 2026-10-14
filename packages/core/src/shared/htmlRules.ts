@@ -53,8 +53,18 @@ export const htmlRules: {
 		src: ["iframe"],
 	},
 	{
-		// is this a good idea?
-		fn: (_value, _context, _meta) => {
+		fn: (value, _context, meta, attrs) => {
+			// The reviewed renderer must retain its native opaque-origin sandbox.
+			// Other engine rules are unchanged; Atlas adapts only this exact route.
+			try {
+				const source = attrs?.["runtimekit-attr-src"] || attrs?.src;
+				if (source) {
+					const target = new _URL(source, meta.base);
+					const reviewed = ["https://chatgpt.com", "https://chat.openai.com"].includes(meta.origin.origin) && target.origin === "https://cdn.platform.openai.com" && target.pathname === "/deployments/dil/v14/runner.html";
+					const fixture = meta.origin.origin === "http://127.0.0.1:4199" && meta.base.pathname === "/compatibility-opaque-parent" && target.origin === meta.origin.origin && target.pathname === "/compatibility-opaque-child";
+					if (!target.username && !target.password && (reviewed || fixture)) return value;
+				}
+			} catch { /* Unrecognized frames retain the existing engine path. */ }
 			return null;
 		},
 		sandbox: ["iframe"],

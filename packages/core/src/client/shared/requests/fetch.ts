@@ -1,6 +1,6 @@
 import { RuntimeKitClient } from "@client/index";
 import { unrewriteLinkHeader } from "./xmlhttprequest";
-import { String } from "@/shared/snapshot";
+import { String, Promise_reject } from "@/shared/snapshot";
 
 /**
  * Capture the page's intended `init.mode` / `init.credentials` and forward
@@ -21,7 +21,21 @@ function rewriteUrlOptionsForFetch(init: RequestInit | undefined) {
 export default function (client: RuntimeKitClient) {
 	client.Proxy("fetch", {
 		apply(ctx) {
-			if (client.box.instanceof(ctx.args[0], "Request")) return;
+			if (client.box.instanceof(ctx.args[0], "Request")) {
+				const init = ctx.args[1] as RequestInit | undefined;
+				if (init?.credentials === undefined && init?.mode === undefined) return;
+				try {
+					// Native construction applies overrides and preserves the standard
+					// body/header/signal validation before restamping the URL metadata.
+					const merged = client.natives.construct("Request", ctx.args[0], init);
+					ctx.args[0] = client.natives.construct("Request", client.rewriteUrl(merged.url, rewriteUrlOptionsForFetch(merged)), merged);
+					ctx.args[1] = undefined;
+				} catch (error) {
+					// fetch rejects its promise; Request construction throws instead.
+					ctx.return(Promise_reject(error));
+				}
+				return;
+			}
 			const url = String(ctx.args[0]);
 			ctx.args[0] = client.rewriteUrl(
 				url,
@@ -32,7 +46,14 @@ export default function (client: RuntimeKitClient) {
 
 	client.Proxy("Request", {
 		construct(ctx) {
-			if (client.box.instanceof(ctx.args[0], "Request")) return;
+			if (client.box.instanceof(ctx.args[0], "Request")) {
+				const init = ctx.args[1] as RequestInit | undefined;
+				if (init?.credentials === undefined && init?.mode === undefined) return;
+				const merged = client.natives.construct("Request", ctx.args[0], init);
+				ctx.args[0] = client.rewriteUrl(merged.url, rewriteUrlOptionsForFetch(merged));
+				ctx.args[1] = merged;
+				return;
+			}
 			const url = String(ctx.args[0]);
 			ctx.args[0] = client.rewriteUrl(
 				url,

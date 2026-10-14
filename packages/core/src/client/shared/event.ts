@@ -39,7 +39,9 @@ export default function (client: RuntimeKitClient, self: Self) {
 				if (typeof this.data === "object" && "$runtimekit$origin" in this.data)
 					return this.data.$runtimekit$origin;
 
-				return client.url.origin;
+				// Unwrapped native messages (notably opaque sandbox children) keep
+				// their real origin. Do not turn origin "null" into the parent site.
+				return this.origin;
 			},
 			data() {
 				if (typeof this.data === "object" && "$runtimekit$data" in this.data)

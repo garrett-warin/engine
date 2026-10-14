@@ -23,7 +23,7 @@ export default function (client: RuntimeKitClient) {
 		apply(ctx) {
 			if (client.box.instanceof(ctx.args[0], "Request")) {
 				const init = ctx.args[1] as RequestInit | undefined;
-				if (init?.credentials === undefined && init?.mode === undefined) return;
+				if (init == null) return;
 				try {
 					// Native construction applies overrides and preserves the standard
 					// body/header/signal validation before restamping the URL metadata.
@@ -48,7 +48,7 @@ export default function (client: RuntimeKitClient) {
 		construct(ctx) {
 			if (client.box.instanceof(ctx.args[0], "Request")) {
 				const init = ctx.args[1] as RequestInit | undefined;
-				if (init?.credentials === undefined && init?.mode === undefined) return;
+				if (init == null) return;
 				const merged = client.natives.construct("Request", ctx.args[0], init);
 				ctx.args[0] = client.rewriteUrl(merged.url, rewriteUrlOptionsForFetch(merged));
 				ctx.args[1] = merged;

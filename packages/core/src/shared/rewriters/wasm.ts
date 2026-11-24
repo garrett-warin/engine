@@ -1,7 +1,7 @@
 // i am a cat. i like to be petted. i like to be fed. i like to be
 import { initSync, Rewriter } from "../../../rewriter/wasm/out/wasm.js";
 import type { JsRewriterOutput } from "../../../rewriter/wasm/out/wasm.js";
-import { flagEnabled, RuntimeKitContext } from "@/shared";
+import { flagEnabled, GroveContext } from "@/shared";
 
 export type { JsRewriterOutput, Rewriter };
 
@@ -33,7 +33,7 @@ function initWasm() {
 type RewriterBox = { rewriter: Rewriter; inUse: boolean };
 const rewriters: RewriterBox[] = [];
 export function getRewriter(
-	context: RuntimeKitContext,
+	context: GroveContext,
 	meta: URLMeta
 ): [Rewriter, () => void] {
 	initWasm();

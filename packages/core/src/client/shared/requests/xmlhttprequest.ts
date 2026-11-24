@@ -1,8 +1,8 @@
-import { getFlag, RuntimeKitContext } from "@/shared";
+import { getFlag, GroveContext } from "@/shared";
 import { rewriteUrl, unrewriteUrl, URLMeta } from "@rewriters/url";
-import { RuntimeKitClient } from "@client/index";
+import { GroveClient } from "@client/index";
 
-export default function (client: RuntimeKitClient, self: Self) {
+export default function (client: GroveClient, self: Self) {
 	let worker;
 	// if (self.Worker && flagEnabled("syncxhr", client.url)) {
 	// 	worker = client.natives.construct("Worker", config.files.sync);
@@ -155,7 +155,7 @@ export default function (client: RuntimeKitClient, self: Self) {
 	});
 }
 
-export function unrewriteLinkHeader(header: string, context: RuntimeKitContext) {
+export function unrewriteLinkHeader(header: string, context: GroveContext) {
 	return header.replace(
 		/<([^>]+)>/gi,
 		(_match, p1) => `<${unrewriteUrl(p1, context)}>`

@@ -24,13 +24,13 @@ const routes = new Map([
     ["vendor/bootstrap-client.js", "text/javascript; charset=utf-8"],
   ],
   [
-    "/runtime/runtimekit.js",
-    ["vendor/runtimekit.js", "text/javascript; charset=utf-8"],
+    "/runtime/grove.js",
+    ["vendor/grove.js", "text/javascript; charset=utf-8"],
   ],
-  ["/runtime/runtimekit.wasm", ["vendor/runtimekit.wasm", "application/wasm"]],
+  ["/runtime/grove.wasm", ["vendor/grove.wasm", "application/wasm"]],
   [
-    "/runtime/runtimekit-utils.js",
-    ["vendor/runtimekit-utils.js", "text/javascript; charset=utf-8"],
+    "/runtime/grove-utils.js",
+    ["vendor/grove-utils.js", "text/javascript; charset=utf-8"],
   ],
   [
     "/controller/controller.api.js",

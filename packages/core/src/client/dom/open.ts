@@ -1,8 +1,8 @@
-import { RuntimeKitClient } from "@client/index";
-import { RUNTIMEKITCLIENT } from "@/symbols";
+import { GroveClient } from "@client/index";
+import { GROVECLIENT } from "@/symbols";
 import { String } from "@/shared/snapshot";
 
-export default function (client: RuntimeKitClient) {
+export default function (client: GroveClient) {
 	client.Proxy("window.open", {
 		apply(ctx) {
 			// undefined opens an about:blank window, pass through
@@ -32,8 +32,8 @@ export default function (client: RuntimeKitClient) {
 
 			if (!realwin) return ctx.return(realwin);
 
-			if (!(RUNTIMEKITCLIENT in realwin)) {
-				// i don't believe it's possible for a just-opened window to already have runtimekit loaded but just in case
+			if (!(GROVECLIENT in realwin)) {
+				// i don't believe it's possible for a just-opened window to already have grove loaded but just in case
 				client.init.hookSubcontext(realwin);
 			}
 
@@ -47,8 +47,8 @@ export default function (client: RuntimeKitClient) {
 			if (!f) return f;
 
 			const win = f.ownerDocument.defaultView;
-			if (win[RUNTIMEKITCLIENT]) {
-				// then this is a subframe in a runtimekit context, and it's safe to pass back the real iframe
+			if (win[GROVECLIENT]) {
+				// then this is a subframe in a grove context, and it's safe to pass back the real iframe
 				return f;
 			} else {
 				// no, the top frame is outside the sandbox

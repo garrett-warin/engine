@@ -1,10 +1,10 @@
-import { isHtmlMimeType, RuntimeKitHeaders } from "@/shared";
+import { isHtmlMimeType, GroveHeaders } from "@/shared";
 import { BareResponse as ChannelResponse } from "@mercuryworkshop/proxy-transports";
-import { RuntimeKitFetchParsed } from ".";
+import { GroveFetchParsed } from ".";
 
 export function normalizeContentType(
-	parsed: RuntimeKitFetchParsed,
-	headers: RuntimeKitHeaders
+	parsed: GroveFetchParsed,
+	headers: GroveHeaders
 ) {
 	if (!isDocument(parsed)) return;
 
@@ -19,7 +19,7 @@ export function isRedirect(response: ChannelResponse) {
 	return response.status >= 300 && response.status < 400;
 }
 
-export function isDocument(parsed: RuntimeKitFetchParsed) {
+export function isDocument(parsed: GroveFetchParsed) {
 	return parsed.destination === "document" || parsed.destination === "iframe";
 }
 

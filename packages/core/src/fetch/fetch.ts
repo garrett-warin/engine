@@ -5,14 +5,14 @@ import {
 } from "@mercuryworkshop/proxy-transports";
 import {
 	BodyType,
-	RuntimeKitFetchHandler,
-	RuntimeKitFetchParsed,
-	RuntimeKitFetchRequest,
-	RuntimeKitFetchResponse,
+	GroveFetchHandler,
+	GroveFetchParsed,
+	GroveFetchRequest,
+	GroveFetchResponse,
 } from ".";
 import { rewriteUrl, unrewriteBlob, unrewriteUrl } from "@rewriters/url";
 import { QP, parseRequest } from "./parse";
-import { RuntimeKitHeaders } from "@/shared";
+import { GroveHeaders } from "@/shared";
 import { isDocument, isRedirect, normalizeContentType } from "./util";
 import { rewriteBody } from "./body";
 import { Tap } from "@/Tap";
@@ -25,9 +25,9 @@ import {
 import { _URL } from "@/shared/snapshot";
 
 export async function doHandleFetch(
-	handler: RuntimeKitFetchHandler,
-	request: RuntimeKitFetchRequest
-): Promise<RuntimeKitFetchResponse> {
+	handler: GroveFetchHandler,
+	request: GroveFetchRequest
+): Promise<GroveFetchResponse> {
 	const parsed = parseRequest(request, handler);
 
 	if (isBlobOrDataUrl(parsed.url)) {
@@ -51,7 +51,7 @@ export async function doHandleFetch(
 	if (parsed.hadExtraParams && isDocument(parsed)) {
 		const location = rewriteUrl(parsed.url, handler.context, parsed.meta);
 		if (location !== request.rawUrl.href) {
-			const responseHeaders = new RuntimeKitHeaders();
+			const responseHeaders = new GroveHeaders();
 			responseHeaders.set("location", location);
 			return {
 				body: "",
@@ -67,14 +67,14 @@ export async function doHandleFetch(
 	let responseBody: BodyType;
 	const response = await doNetworkFetch(handler, request, parsed, newheaders);
 
-	// set-cookie needs to take the raw headers. after this, we can flatten the headers into a RuntimeKitHeaders object
+	// set-cookie needs to take the raw headers. after this, we can flatten the headers into a GroveHeaders object
 	await handleCookies(handler, request, parsed, response.rawHeaders);
 
 	if (isDocument(parsed)) {
 		// for document.referer
 		parsed.trackedClient?.history.push({
 			url: parsed.url.href,
-			refererPolicy: RuntimeKitHeaders.fromRawHeaders(response.rawHeaders).get(
+			refererPolicy: GroveHeaders.fromRawHeaders(response.rawHeaders).get(
 				"referrer-policy"
 			),
 		});
@@ -176,10 +176,10 @@ export async function doHandleFetch(
 }
 
 export async function doNetworkFetch(
-	handler: RuntimeKitFetchHandler,
-	request: RuntimeKitFetchRequest,
-	parsed: RuntimeKitFetchParsed,
-	newheaders: RuntimeKitHeaders
+	handler: GroveFetchHandler,
+	request: GroveFetchRequest,
+	parsed: GroveFetchParsed,
+	newheaders: GroveHeaders
 ): Promise<ChannelResponse> {
 	const init = {
 		body: request.body,
@@ -236,10 +236,10 @@ function isBlobOrDataUrl(url: _URL): boolean {
 }
 
 async function handleBlobOrDataUrlFetch(
-	handler: RuntimeKitFetchHandler,
-	request: RuntimeKitFetchRequest,
-	parsed: RuntimeKitFetchParsed
-): Promise<RuntimeKitFetchResponse> {
+	handler: GroveFetchHandler,
+	request: GroveFetchRequest,
+	parsed: GroveFetchParsed
+): Promise<GroveFetchResponse> {
 	let dataUrl = request.rawUrl.pathname.substring(
 		handler.context.prefix.pathname.length
 	);
@@ -265,7 +265,7 @@ async function handleBlobOrDataUrlFetch(
 			response as ChannelResponse
 		);
 	}
-	const headers = RuntimeKitHeaders.fromRawHeaders(response.rawHeaders);
+	const headers = GroveHeaders.fromRawHeaders(response.rawHeaders);
 
 	// blob urls actually *can* set charsets, so we need to normalize them if it goes down the html path
 	normalizeContentType(parsed, headers);
@@ -296,9 +296,9 @@ export function registrableDomainForRedirect(hostname: string): string {
 }
 
 async function handleCookies(
-	handler: RuntimeKitFetchHandler,
-	request: RuntimeKitFetchRequest,
-	parsed: RuntimeKitFetchParsed,
+	handler: GroveFetchHandler,
+	request: GroveFetchRequest,
+	parsed: GroveFetchParsed,
 	rawHeaders: RawHeaders
 ) {
 	if (parsed.fetchCredentials === "omit" || (parsed.fetchCredentials === "same-origin" && parsed.clientUrl?.origin !== parsed.url.origin)) return;

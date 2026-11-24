@@ -618,7 +618,7 @@ async function ensureServer() {
 										Object.entries(recorded).filter(
 											([k]) =>
 												k.startsWith("sec-fetch") ||
-												k === "x-runtimekit-debug" ||
+												k === "x-grove-debug" ||
 												k === "host" ||
 												k === "origin" ||
 												k === "referer"
@@ -793,7 +793,7 @@ function metadataPageTest(entryPath: string): Test {
 		// port to keep same-origin classifications consistent.
 		useExplicitTargetPort: true,
 		path: basePath,
-		runtimekitOnly: true,
+		groveOnly: true,
 		reloadHarness: true,
 		timeoutMs: 15000,
 		async start({ pass, fail }) {

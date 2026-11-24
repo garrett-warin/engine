@@ -5,5 +5,5 @@
 
 import { Symbol_for } from "@/shared/snapshot";
 
-export const RUNTIMEKITCLIENTNAME = "runtimekit client global";
-export const RUNTIMEKITCLIENT = Symbol_for(RUNTIMEKITCLIENTNAME);
+export const GROVECLIENTNAME = "grove client global";
+export const GROVECLIENT = Symbol_for(GROVECLIENTNAME);

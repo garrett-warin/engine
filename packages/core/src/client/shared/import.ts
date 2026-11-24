@@ -1,7 +1,7 @@
-import { RuntimeKitClient } from "@client/index";
+import { GroveClient } from "@client/index";
 import { Object_defineProperty, _URL } from "@/shared/snapshot";
 
-export default function (client: RuntimeKitClient, self: Self) {
+export default function (client: GroveClient, self: Self) {
 	const boundimport = client.natives.call(
 		"Function",
 		null,

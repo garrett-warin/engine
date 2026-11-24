@@ -1,8 +1,8 @@
-import { versionInfo } from "@mercuryworkshop/runtimekit";
+import { versionInfo } from "@mercuryworkshop/grove";
 import { assertDependencyVersions } from "./version";
 
 export { versionInfo };
-export { ManagedPlugin } from "@mercuryworkshop/runtimekit-controller";
+export { ManagedPlugin } from "@mercuryworkshop/grove-controller";
 export {
 	HttpCachePlugin,
 	CACHE_NAME,

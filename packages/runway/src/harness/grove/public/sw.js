@@ -9,7 +9,7 @@ self.addEventListener("activate", (event) => {
 });
 
 addEventListener("fetch", (e) => {
-	if ($runtimekitController.shouldRoute(e)) {
-		e.respondWith($runtimekitController.route(e));
+	if ($groveController.shouldRoute(e)) {
+		e.respondWith($groveController.route(e));
 	}
 });

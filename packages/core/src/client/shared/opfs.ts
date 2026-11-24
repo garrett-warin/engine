@@ -1,7 +1,7 @@
-import { RuntimeKitClient } from "@client/index";
+import { GroveClient } from "@client/index";
 import { Object_defineProperty } from "@/shared/snapshot";
 
-export default function (client: RuntimeKitClient) {
+export default function (client: GroveClient) {
 	client.Proxy("StorageManager.prototype.getDirectory", {
 		apply(ctx) {
 			const rootPromise = ctx.call();

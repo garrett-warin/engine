@@ -16,9 +16,9 @@ export async function startHarness() {
 	const app = express();
 
 	app.use(
-		"/runtimekit",
+		"/grove",
 		express.static(
-			path.join(packageRoot, "node_modules/@mercuryworkshop/runtimekit/dist")
+			path.join(packageRoot, "node_modules/@mercuryworkshop/grove/dist")
 		)
 	);
 
@@ -27,7 +27,7 @@ export async function startHarness() {
 		express.static(
 			path.join(
 				packageRoot,
-				"node_modules/@mercuryworkshop/runtimekit-controller/dist"
+				"node_modules/@mercuryworkshop/grove-controller/dist"
 			)
 		)
 	);

@@ -44,7 +44,7 @@ test("frontend contains only the automatic test iframe", async () => {
   const response = await fetch(origin);
   const html = await response.text();
   assert.equal(response.status, 200);
-  assert.match(html, /id="browser-frame"/);
+  assert.match(html, /id="frame"/);
   assert.match(html, /type="module" src="\/app\.js"/);
   assert.doesNotMatch(html, /<form|<input|<button/i);
 });
@@ -56,7 +56,7 @@ test("browser bootstrap uses the local relay endpoint", async () => {
   assert.match(source, /streamRelayPath: "\/relay\/"/);
   assert.match(source, /transport: "http"/);
   assert.match(source, /controller\.createFrame\(iframe\)/);
-  assert.match(source, /frame\.go\("https:\/\/example\.com\/"\)/);
+  assert.match(source, /frame\.go\("https:\/\/google\.com\/"\)/);
   assert.doesNotMatch(
     source,
     /url-form|url-input|requestSubmit|addEventListener\("submit"/,
@@ -70,9 +70,9 @@ test("every client response is free of restricted implementation names", async (
     "/styles.css",
     "/worker.js",
     "/bootstrap/bootstrap-client.js",
-    "/runtime/runtimekit.js",
-    "/runtime/runtimekit.wasm",
-    "/runtime/runtimekit-utils.js",
+    "/runtime/grove.js",
+    "/runtime/grove.wasm",
+    "/runtime/grove-utils.js",
     "/controller/controller.api.js",
     "/controller/controller.inject.js",
     "/controller/controller.worker.js",
@@ -97,9 +97,9 @@ test("client routes, assets, globals, methods, and worker targets are renamed", 
     "/app.js",
     "/worker.js",
     "/bootstrap/bootstrap-client.js",
-    "/runtime/runtimekit.js",
-    "/runtime/runtimekit.wasm",
-    "/runtime/runtimekit-utils.js",
+    "/runtime/grove.js",
+    "/runtime/grove.wasm",
+    "/runtime/grove-utils.js",
     "/controller/controller.api.js",
     "/controller/controller.inject.js",
     "/controller/controller.worker.js",
@@ -122,8 +122,8 @@ test("client routes, assets, globals, methods, and worker targets are renamed", 
 
 for (const [route, contentType] of [
   ["/worker.js", "text/javascript"],
-  ["/runtime/runtimekit.js", "text/javascript"],
-  ["/runtime/runtimekit.wasm", "application/wasm"],
+  ["/runtime/grove.js", "text/javascript"],
+  ["/runtime/grove.wasm", "application/wasm"],
   ["/controller/controller.api.js", "text/javascript"],
   ["/controller/controller.inject.js", "text/javascript"],
   ["/controller/controller.worker.js", "text/javascript"],

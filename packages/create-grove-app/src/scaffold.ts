@@ -28,7 +28,7 @@ async function template(template: string, projectName: string) {
 			await copyLocalTemplate(template, projectName);
 		} else {
 			await downloadTemplate(
-				`github:MercuryWorkshop/runtimekit/packages/create-proxy-app/templates/${template}`,
+				`github:MercuryWorkshop/grove/packages/create-grove-app/templates/${template}`,
 				{
 					force: false,
 					provider: "github",

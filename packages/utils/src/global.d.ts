@@ -1,8 +1,8 @@
-import type * as RuntimeKitController from "@mercuryworkshop/runtimekit-controller";
+import type * as GroveController from "@mercuryworkshop/grove-controller";
 
 declare global {
-	const $runtimekit: typeof import("@mercuryworkshop/runtimekit");
-	const $runtimekitController: typeof RuntimeKitController;
+	const $grove: typeof import("@mercuryworkshop/grove");
+	const $groveController: typeof GroveController;
 }
 
 export {};

@@ -1,5 +1,5 @@
 import { IncrementalHtmlRewriter } from "@/shared";
-import { RuntimeKitClient } from "./client";
+import { GroveClient } from "./client";
 import { SourceMaps } from "./shared/sourcemaps";
 import {
 	Object_getOwnPropertyNames,
@@ -7,11 +7,11 @@ import {
 } from "@/shared/snapshot";
 
 export class SingletonBox {
-	clients: RuntimeKitClient[] = [];
-	globals: Map<Self, RuntimeKitClient> = new Map();
-	documents: Map<Document, RuntimeKitClient> = new Map();
-	histories: Map<History, RuntimeKitClient> = new Map();
-	locations: Map<Location, RuntimeKitClient> = new Map();
+	clients: GroveClient[] = [];
+	globals: Map<Self, GroveClient> = new Map();
+	documents: Map<Document, GroveClient> = new Map();
+	histories: Map<History, GroveClient> = new Map();
+	locations: Map<Location, GroveClient> = new Map();
 	writeRewriters = new WeakMap<Document, IncrementalHtmlRewriter>();
 	unproxy = new Map<any, any>();
 
@@ -19,9 +19,9 @@ export class SingletonBox {
 
 	sourcemaps: SourceMaps = {};
 
-	constructor(public ownerclient: RuntimeKitClient) {}
+	constructor(public ownerclient: GroveClient) {}
 
-	registerClient(client: RuntimeKitClient, global: Self) {
+	registerClient(client: GroveClient, global: Self) {
 		this.clients.push(client);
 		this.globals.set(global, client);
 		this.documents.set(global.document, client);
@@ -44,7 +44,7 @@ export class SingletonBox {
 			return false;
 		}
 		for (const ctor of ctors) {
-			// eslint-disable-next-line runtimekit-core/no-instanceof
+			// eslint-disable-next-line grove-core/no-instanceof
 			if (obj instanceof ctor) return true;
 		}
 		return false;

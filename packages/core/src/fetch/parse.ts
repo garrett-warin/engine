@@ -1,10 +1,10 @@
 import { Object_entries, Object_keys, _URL, Error } from "@/shared/snapshot";
 import { unrewriteUrl, parseImportMapRoute, URLMeta } from "@rewriters/url";
 import {
-	RuntimeKitFetchHandler,
-	RuntimeKitFetchParsed,
-	RuntimeKitFetchRequest,
-	RuntimeKitFetchTrackedClient,
+	GroveFetchHandler,
+	GroveFetchParsed,
+	GroveFetchRequest,
+	GroveFetchTrackedClient,
 } from ".";
 
 export const QP = {
@@ -57,9 +57,9 @@ export function parseQueryParams(searchParams: URLSearchParams): {
 }
 
 export function parseRequest(
-	request: RuntimeKitFetchRequest,
-	handler: RuntimeKitFetchHandler
-): RuntimeKitFetchParsed {
+	request: GroveFetchRequest,
+	handler: GroveFetchHandler
+): GroveFetchParsed {
 	const strippedUrl = new _URL(request.rawUrl.href);
 	const { params, extras } = parseQueryParams(request.rawUrl.searchParams);
 	const moduleRoute = parseImportMapRoute(request.rawUrl, handler.context);
@@ -88,11 +88,11 @@ export function parseRequest(
 	}
 
 	const clientId = request.clientId;
-	let trackedClient: RuntimeKitFetchTrackedClient | undefined;
+	let trackedClient: GroveFetchTrackedClient | undefined;
 	if (clientId) {
 		trackedClient = handler.trackedClients.get(clientId);
 		if (!trackedClient) {
-			trackedClient = new RuntimeKitFetchTrackedClient(clientId);
+			trackedClient = new GroveFetchTrackedClient(clientId);
 			handler.trackedClients.set(clientId, trackedClient);
 		}
 	}
@@ -128,7 +128,7 @@ export function parseRequest(
 		referrerPolicy: params.referrerPolicy,
 	};
 
-	const parsed: RuntimeKitFetchParsed = {
+	const parsed: GroveFetchParsed = {
 		meta,
 		url,
 		isModule: params.isModule === "module",

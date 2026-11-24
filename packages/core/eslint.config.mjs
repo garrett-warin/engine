@@ -8,7 +8,7 @@ import noGlobalsPlugin from "./tools/eslint/no-globals-plugin.mjs";
 import noInstanceofPlugin from "./tools/eslint/no-instanceof-plugin.mjs";
 import poisonedCtxPlugin from "./tools/eslint/poisoned-ctx-plugin.mjs";
 
-const runtimekitCorePlugin = {
+const groveCorePlugin = {
 	rules: {
 		...noGlobalsPlugin.rules,
 		...noInstanceofPlugin.rules,
@@ -77,28 +77,28 @@ export default [
 	{
 		files: ["src/**/*.ts"],
 		plugins: {
-			"runtimekit-core": runtimekitCorePlugin,
+			"grove-core": groveCorePlugin,
 		},
 		rules: {
-			"runtimekit-core/no-globals": [
+			"grove-core/no-globals": [
 				"error",
 				{
 					allow: ["BUILDDATE", "COMMITHASH", "dbg", "setTimeout", "VERSION"],
 				},
 			],
-			"runtimekit-core/no-instanceof": "error",
+			"grove-core/no-instanceof": "error",
 		},
 	},
 	{
 		files: ["src/shared/snapshot.ts"],
 		rules: {
-			"runtimekit-core/no-globals": ["off"],
+			"grove-core/no-globals": ["off"],
 		},
 	},
 	{
 		files: ["src/client/**/*.ts"],
 		rules: {
-			"runtimekit-core/no-poisoned-ctx-value": "warn",
+			"grove-core/no-poisoned-ctx-value": "warn",
 		},
 	},
 ];

@@ -1,8 +1,8 @@
 /**
- * Version information for the current RuntimeKit build.
+ * Version information for the current Grove build.
  * Contains both the semantic version string and the git commit hash for build identification.
  */
-export interface RuntimeKitVersionInfo {
+export interface GroveVersionInfo {
 	/** The semantic version */
 	version: string;
 	/** The git commit hash that this build was created from */
@@ -12,9 +12,9 @@ export interface RuntimeKitVersionInfo {
 }
 
 /**
- * RuntimeKit Feature Flags, configured at build time
+ * Grove Feature Flags, configured at build time
  */
-export type RuntimeKitFlags = {
+export type GroveFlags = {
 	syncxhr: boolean;
 	disableComputedWrap: boolean;
 	rewriterLogs: boolean;
@@ -30,7 +30,7 @@ export type RuntimeKitFlags = {
 	encapsulateWorkers: boolean;
 };
 
-export interface RuntimeKitConfig {
+export interface GroveConfig {
 	globals: {
 		wrapfn: string;
 		wrappropertybase: string;
@@ -45,17 +45,17 @@ export interface RuntimeKitConfig {
 		templocid: string;
 		tempunusedid: string;
 	};
-	flags: RuntimeKitFlags;
-	siteFlags: Record<string, Partial<RuntimeKitFlags>>;
+	flags: GroveFlags;
+	siteFlags: Record<string, Partial<GroveFlags>>;
 	maskedfiles: string[];
 }
 
 /**
- * The config for RuntimeKit initialization.
+ * The config for Grove initialization.
  */
-export interface RuntimeKitInitConfig
-	extends Omit<RuntimeKitConfig, "codec" | "flags"> {
-	flags: Partial<RuntimeKitFlags>;
+export interface GroveInitConfig
+	extends Omit<GroveConfig, "codec" | "flags"> {
+	flags: Partial<GroveFlags>;
 	codec: {
 		encode: (url: string) => string;
 		decode: (url: string) => string;

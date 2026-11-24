@@ -1,11 +1,11 @@
 import { unrewriteUrl } from "@rewriters/url";
-import { RuntimeKitClient } from "@client/index";
+import { GroveClient } from "@client/index";
 
-export const enabled = (client: RuntimeKitClient) =>
+export const enabled = (client: GroveClient) =>
 	client.flagEnabled("cleanErrors");
 
-export default function (client: RuntimeKitClient, _self: Self) {
-	// v8 only. all we need to do is clean the runtimekit urls from stack traces
+export default function (client: GroveClient, _self: Self) {
+	// v8 only. all we need to do is clean the grove urls from stack traces
 	const closure = (error, stack) => {
 		let newstack = error.stack;
 
@@ -14,7 +14,7 @@ export default function (client: RuntimeKitClient, _self: Self) {
 
 			try {
 				if (client.config.maskedfiles.some((f) => url.endsWith(f))) {
-					// strip stack frames including runtimekit handlers from the trace
+					// strip stack frames including grove handlers from the trace
 					const lines = newstack.split("\n");
 					const line = lines.find((l) => l.includes(url));
 					lines.splice(line, 1);

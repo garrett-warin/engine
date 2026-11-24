@@ -15,15 +15,15 @@ import type {
 } from "./types";
 import {
 	CookieJar,
-	RUNTIMEKITCLIENT,
-	RuntimeKitClient,
+	GROVECLIENT,
+	GroveClient,
 	setWasm,
 	Tap,
 	type CookieSyncOptions,
-	type RuntimeKitConfig,
-	type RuntimeKitContext,
+	type GroveConfig,
+	type GroveContext,
 	type TrackedHistoryState,
-} from "@mercuryworkshop/runtimekit";
+} from "@mercuryworkshop/grove";
 
 const MessagePort_postMessage = MessagePort.prototype.postMessage;
 const postMessage = (
@@ -167,12 +167,12 @@ const sw = navigator.serviceWorker.controller;
 
 type Init = {
 	config: Config;
-	sjconfig: RuntimeKitConfig;
+	sjconfig: GroveConfig;
 	prefix: URL;
 	cookies: string;
 	yieldGetInjectScripts: (
 		config: Config,
-		sjconfig: RuntimeKitConfig,
+		sjconfig: GroveConfig,
 		prefix: URL,
 		cookieJar: CookieJar,
 		codecEncode: (input: string) => string,
@@ -185,8 +185,8 @@ type Init = {
 };
 
 export function load(init: Init) {
-	if (RUNTIMEKITCLIENT in globalThis) {
-		((globalThis as any)[RUNTIMEKITCLIENT] as RuntimeKitClient).syncDocumentInit({
+	if (GROVECLIENT in globalThis) {
+		((globalThis as any)[GROVECLIENT] as GroveClient).syncDocumentInit({
 			initHeaders: init.initHeaders,
 			history: init.history,
 			cookies: init.cookies,
@@ -211,7 +211,7 @@ function createFrameId() {
 }
 
 class ExecutionContextWrapper {
-	client!: RuntimeKitClient;
+	client!: GroveClient;
 	cookieJar: CookieJar;
 	transport: RemoteTransport;
 	private handleServiceWorkerCookieMessage: (event: MessageEvent) => void;
@@ -285,10 +285,10 @@ class ExecutionContextWrapper {
 			this.handleServiceWorkerCookieMessage
 		);
 
-		this.injectRuntimeKit();
+		this.injectGrove();
 	}
 
-	injectRuntimeKit() {
+	injectGrove() {
 		const frame = this.global.frameElement as HTMLIFrameElement | null;
 		if (frame && !frame.name) {
 			window.name = frame.name = createFrameId();
@@ -299,7 +299,7 @@ class ExecutionContextWrapper {
 			isTopLevel = false;
 			let currentwin = this.global.window;
 			while (currentwin.parent !== currentwin) {
-				const currentclient = currentwin[RUNTIMEKITCLIENT];
+				const currentclient = currentwin[GROVECLIENT];
 				if (!currentclient) {
 					currentwin = currentwin.parent.window;
 					continue;
@@ -315,7 +315,7 @@ class ExecutionContextWrapper {
 				currentwin = currentwin.parent.window;
 			}
 		}
-		const context: RuntimeKitContext = {
+		const context: GroveContext = {
 			config: this.init.sjconfig,
 			prefix: this.init.prefix,
 			cookieJar: this.cookieJar,
@@ -332,7 +332,7 @@ class ExecutionContextWrapper {
 				codecDecode: this.init.codecDecode,
 			},
 		};
-		this.client = new RuntimeKitClient(this.global, {
+		this.client = new GroveClient(this.global, {
 			context,
 			transport: this.transport,
 			sendSetCookie: async (cookies, options) => {

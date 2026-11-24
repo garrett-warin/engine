@@ -1,9 +1,8 @@
-<h1 align="center">Scramjet</h1>
+<h1 align="center">Grove</h1>
 
 ## Fixed deployable test application
 
-This repository includes a self-contained test application with a URL bar,
-proxied iframe, local relay server, health check, and vendored browser runtime.
+This repository includes a self-contained test application with an automatically loaded iframe, local relay server, health check, and vendored browser runtime.
 It listens on port **8080** by default.
 
 ### Run locally
@@ -27,8 +26,8 @@ pnpm test:package
 ### Deploy with Docker
 
 ```sh
-docker build -t fixed-scramjet .
-docker run --rm -p 8080:8080 fixed-scramjet
+docker build -t grove-engine .
+docker run --rm -p 8080:8080 grove-engine
 ```
 
 Production hosting must provide HTTPS for service-worker support outside

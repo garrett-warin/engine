@@ -1,5 +1,5 @@
 import { iswindow } from "@client/entry";
-import { RuntimeKitClient } from "@client/index";
+import { GroveClient } from "@client/index";
 import { getOwnPropertyDescriptorHandler } from "@client/helpers";
 import {
 	Object_defineProperty,
@@ -9,9 +9,9 @@ import {
 	Symbol_for,
 } from "@/shared/snapshot";
 
-const realOnEvent = Symbol_for("runtimekit original onevent function");
+const realOnEvent = Symbol_for("grove original onevent function");
 
-export default function (client: RuntimeKitClient, self: Self) {
+export default function (client: GroveClient, self: Self) {
 	const handlers = {
 		message: {
 			_init() {
@@ -31,7 +31,7 @@ export default function (client: RuntimeKitClient, self: Self) {
 			source() {
 				if (this.source === null) return null;
 
-				// const scram: RuntimeKitClient = this.source[RUNTIMEKITCLIENT];
+				// const scram: GroveClient = this.source[GROVECLIENT];
 
 				// if (scram) return scram.globalProxy;
 
@@ -39,16 +39,16 @@ export default function (client: RuntimeKitClient, self: Self) {
 			},
 			origin() {
 				if (!iswindow) return "";
-				if (typeof this.data === "object" && "$runtimekit$origin" in this.data)
-					return this.data.$runtimekit$origin;
+				if (typeof this.data === "object" && "$grove$origin" in this.data)
+					return this.data.$grove$origin;
 
 				// Unwrapped native messages (notably opaque sandbox children) keep
 				// their real origin. Do not turn origin "null" into the parent site.
 				return this.origin;
 			},
 			data() {
-				if (typeof this.data === "object" && "$runtimekit$data" in this.data)
-					return this.data.$runtimekit$data;
+				if (typeof this.data === "object" && "$grove$data" in this.data)
+					return this.data.$grove$data;
 
 				return this.data;
 			},

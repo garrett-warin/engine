@@ -53,7 +53,7 @@ export default [
 			const c = await caches.open("adversarial-cache3");
 			const names = await caches.keys();
 			assert(names.includes("adversarial-cache3"), "own cache is listed under its own name: " + JSON.stringify(names));
-			assert(!names.some((n) => n.includes("runtimekit")), "no proxy-internal caches listed: " + JSON.stringify(names));
+			assert(!names.some((n) => n.includes("grove")), "no proxy-internal caches listed: " + JSON.stringify(names));
 			assert(!names.some((n) => n.includes("http")), "no namespaced names: " + JSON.stringify(names));
 			await caches.delete("adversarial-cache3");
 		`,

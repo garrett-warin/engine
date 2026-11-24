@@ -1,8 +1,8 @@
-import { RuntimeKitClient } from "@client/index";
+import { GroveClient } from "@client/index";
 import { Tap } from "@/Tap";
 import { String, _URL } from "@/shared/snapshot";
 
-export default function (client: RuntimeKitClient, _self: Self) {
+export default function (client: GroveClient, _self: Self) {
 	client.Proxy(
 		["History.prototype.pushState", "History.prototype.replaceState"],
 		{

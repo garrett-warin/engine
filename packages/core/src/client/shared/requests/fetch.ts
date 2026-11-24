@@ -1,4 +1,4 @@
-import { RuntimeKitClient } from "@client/index";
+import { GroveClient } from "@client/index";
 import { unrewriteLinkHeader } from "./xmlhttprequest";
 import { String, Promise_reject } from "@/shared/snapshot";
 
@@ -18,7 +18,7 @@ function rewriteUrlOptionsForFetch(init: RequestInit | undefined) {
 	};
 }
 
-export default function (client: RuntimeKitClient) {
+export default function (client: GroveClient) {
 	client.Proxy("fetch", {
 		apply(ctx) {
 			if (client.box.instanceof(ctx.args[0], "Request")) {

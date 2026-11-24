@@ -1,9 +1,9 @@
 import { BareResponse as ChannelResponse } from "@mercuryworkshop/proxy-transports";
 import {
 	BodyType,
-	RuntimeKitFetchHandler,
-	RuntimeKitFetchParsed,
-	RuntimeKitFetchRequest,
+	GroveFetchHandler,
+	GroveFetchParsed,
+	GroveFetchRequest,
 } from ".";
 import {
 	flagEnabled,
@@ -18,9 +18,9 @@ import { sniffEncoding } from "@/shared/sniffEncoding";
 import { _TextDecoder } from "@/shared/snapshot";
 
 export async function rewriteBody(
-	handler: RuntimeKitFetchHandler,
-	request: RuntimeKitFetchRequest,
-	parsed: RuntimeKitFetchParsed,
+	handler: GroveFetchHandler,
+	request: GroveFetchRequest,
+	parsed: GroveFetchParsed,
 	response: ChannelResponse
 ): Promise<BodyType> {
 	switch (parsed.destination) {

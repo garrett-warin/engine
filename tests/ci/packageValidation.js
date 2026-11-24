@@ -9,16 +9,16 @@ import { glob } from "glob";
 import { existsSync } from "node:fs";
 
 /**
- * Expected distribution files for RuntimeKit's bundles.
+ * Expected distribution files for Grove's bundles.
  * All JS files listed must have corresponding source maps.
  * These aren't globs.
  */
 const EXPECTED_CORE_DIST_FILES = [
-	"packages/core/dist/runtimekit.js",
-	"packages/core/dist/runtimekit.mjs",
-	"packages/core/dist/runtimekit_bundled.js",
-	"packages/core/dist/runtimekit_bundled.mjs",
-	"packages/core/dist/runtimekit.wasm",
+	"packages/core/dist/grove.js",
+	"packages/core/dist/grove.mjs",
+	"packages/core/dist/grove_bundled.js",
+	"packages/core/dist/grove_bundled.mjs",
+	"packages/core/dist/grove.wasm",
 ];
 
 /**

@@ -1,7 +1,7 @@
 import { basicTest } from "../../testcommon.ts";
 
 // The rewriter rewrites *every* `.postMessage` member expression to
-// `$runtimekit$wrappostmessage(obj).postMessage`, and that helper returns a
+// `$grove$wrappostmessage(obj).postMessage`, and that helper returns a
 // throwaway object:
 //
 //   if (!obj || typeof obj.postMessage !== "function") return obj;
@@ -138,7 +138,7 @@ export default [
 	}),
 	basicTest({
 		// KNOWN FAILURE: detaching a method loses its receiver in real JS. The
-		// wrapper pre-binds it, so runtimekit keeps working where the web throws -
+		// wrapper pre-binds it, so grove keeps working where the web throws -
 		// code that relies on the TypeError (feature detection, `this` guards)
 		// takes a different branch.
 		name: "pmwrap-detached-loses-receiver",

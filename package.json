@@ -1,7 +1,7 @@
 {
-  "name": "fixed-scramjet-app",
+  "name": "grove-engine-app",
   "version": "1.0.0",
-  "description": "Deployable fixed Scramjet test application",
+  "description": "Grove engine test application derived from Scramjet",
   "private": true,
   "type": "module",
   "keywords": [],

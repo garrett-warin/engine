@@ -1,4 +1,4 @@
-/* eslint-disable runtimekit-core/no-globals */
+/* eslint-disable grove-core/no-globals */
 
 addEventListener(
 	"message",

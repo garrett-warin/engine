@@ -11,11 +11,11 @@ let frame;
 async function init() {
 	controller = await initBootstrap();
 
-	const cachePlugin = new $runtimekitUtils.HttpCachePlugin();
-	const urlWatcher = new $runtimekitUtils.UrlWatcherPlugin((url) => {
+	const cachePlugin = new $groveUtils.HttpCachePlugin();
+	const urlWatcher = new $groveUtils.UrlWatcherPlugin((url) => {
 		frameUrl.textContent = url;
 	});
-	const catchEscapedLinks = new $runtimekitUtils.CatchEscapedLinksPlugin(
+	const catchEscapedLinks = new $groveUtils.CatchEscapedLinksPlugin(
 		(url) => new URL(`/?goto=${encodeURIComponent(url.href)}`, location.origin)
 	);
 

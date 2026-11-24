@@ -1,10 +1,10 @@
 import { rewriteJs } from "@rewriters/js";
-import { RuntimeKitClient } from "@client/index";
+import { GroveClient } from "@client/index";
 import { Object_defineProperty, String } from "@/shared/snapshot";
 
-export default function (client: RuntimeKitClient, self: Self) {
+export default function (client: GroveClient, self: Self) {
 	// used for proxying *direct eval*
-	// eval("...") -> eval($runtimekit$rewrite("..."))
+	// eval("...") -> eval($grove$rewrite("..."))
 	Object_defineProperty(self, client.config.globals.rewritefn, {
 		value: function (js: any) {
 			// if eval is called on anything other than a string, we should just return it unchanged
@@ -26,7 +26,7 @@ export default function (client: RuntimeKitClient, self: Self) {
 	});
 }
 
-export function createIndirectEval(client: RuntimeKitClient) {
+export function createIndirectEval(client: GroveClient) {
 	const indirection = client.global.eval;
 	const proxy = new Proxy(client.global.eval, {
 		apply(_target, _thisArg, args) {

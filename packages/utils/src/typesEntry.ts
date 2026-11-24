@@ -1,5 +1,5 @@
 import * as Types from "./index";
 export * from "./index";
 declare global {
-	const $runtimekitUtils: typeof Types;
+	const $groveUtils: typeof Types;
 }

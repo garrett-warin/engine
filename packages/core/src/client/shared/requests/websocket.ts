@@ -1,5 +1,5 @@
 import { type BareCompatibleWebSocket as ChannelCompatibleWebSocket } from "@mercuryworkshop/proxy-transports";
-import { RuntimeKitClient } from "@client/index";
+import { GroveClient } from "@client/index";
 import {
 	Object_setPrototypeOf,
 	Reflect_get,
@@ -30,7 +30,7 @@ type FakeWebSocketStreamState = {
 	readable: ReadableStream;
 	writable: WritableStream;
 };
-export default function (client: RuntimeKitClient, self: GlobalThis) {
+export default function (client: GroveClient, self: GlobalThis) {
 	const socketmap: WeakMap<WebSocket, FakeWebSocketState> =
 		new _WeakMap() as WeakMap<WebSocket, FakeWebSocketState>;
 	const socketstreammap: WeakMap<WebSocketStream, FakeWebSocketStreamState> =

@@ -6,14 +6,14 @@ import {
 } from "@mercuryworkshop/proxy-transports";
 
 import { type URLMeta } from "@rewriters/url";
-import { type RuntimeKitRequestMode } from "./parse";
-import { RuntimeKitHeaders } from "@/shared/headers";
-import { HtmlRewriterHooks, RuntimeKitContext } from "@/shared";
+import { type GroveRequestMode } from "./parse";
+import { GroveHeaders } from "@/shared/headers";
+import { HtmlRewriterHooks, GroveContext } from "@/shared";
 import { Tap, TapInstance } from "@/Tap";
 import { doHandleFetch } from "./fetch";
 import { _URL, _Map } from "@/shared/snapshot";
 
-export interface RuntimeKitFetchRequest {
+export interface GroveFetchRequest {
 	rawUrl: URL;
 	rawReferrer: string | null;
 	// use parsed.destination instead
@@ -24,7 +24,7 @@ export interface RuntimeKitFetchRequest {
 	body: BodyType | null;
 	cache: RequestCache;
 
-	initialHeaders: RuntimeKitHeaders;
+	initialHeaders: GroveHeaders;
 
 	rawClientUrl?: URL;
 
@@ -32,7 +32,7 @@ export interface RuntimeKitFetchRequest {
 	clientId: string;
 }
 
-export interface RuntimeKitFetchParsed {
+export interface GroveFetchParsed {
 	url: _URL;
 	clientUrl?: _URL;
 	referrerSourceUrl?: _URL | null;
@@ -51,9 +51,9 @@ export interface RuntimeKitFetchParsed {
 	fetchCredentials?: RequestCredentials;
 
 	// tracks RequestInit.mode if set
-	fetchMode?: RuntimeKitRequestMode;
+	fetchMode?: GroveRequestMode;
 
-	// was this request made by an iframe? (runtimekit's definition of an iframe, not the browser's)
+	// was this request made by an iframe? (grove's definition of an iframe, not the browser's)
 	isIframe?: boolean;
 
 	// request.destination, but is overridden by $dest
@@ -63,12 +63,12 @@ export interface RuntimeKitFetchParsed {
 	isModule: boolean;
 	isFakeDataURL: boolean;
 	referrerPolicy?: string;
-	trackedClient?: RuntimeKitFetchTrackedClient;
+	trackedClient?: GroveFetchTrackedClient;
 }
 
-export interface RuntimeKitFetchResponse {
+export interface GroveFetchResponse {
 	body: BodyType;
-	headers: RuntimeKitHeaders;
+	headers: GroveHeaders;
 	status: number;
 	statusText: string;
 }
@@ -85,7 +85,7 @@ export type CookieSyncOptions = {
 
 export type FetchHandlerInit = {
 	transport: ProxyTransport;
-	context: RuntimeKitContext;
+	context: GroveContext;
 	crossOriginIsolated?: boolean;
 
 	sendSetCookie: (
@@ -100,18 +100,18 @@ export type TrackedHistoryState = {
 	url: string;
 	refererPolicy?: string;
 };
-export class RuntimeKitFetchTrackedClient {
+export class GroveFetchTrackedClient {
 	history: TrackedHistoryState[] = [];
 	constructor(public clientId: string) {}
 }
 
-// eslint-disable-next-line runtimekit-core/no-globals
-export class RuntimeKitFetchHandler extends EventTarget {
+// eslint-disable-next-line grove-core/no-globals
+export class GroveFetchHandler extends EventTarget {
 	public client: ChannelCompatibleClient;
 	public crossOriginIsolated: boolean = false;
-	public context: RuntimeKitContext;
+	public context: GroveContext;
 
-	public trackedClients = new _Map<string, RuntimeKitFetchTrackedClient>();
+	public trackedClients = new _Map<string, GroveFetchTrackedClient>();
 
 	public hooks: {
 		rewriter: {
@@ -147,25 +147,25 @@ export class RuntimeKitFetchHandler extends EventTarget {
 	}
 
 	async handleFetch(
-		request: RuntimeKitFetchRequest
-	): Promise<RuntimeKitFetchResponse> {
+		request: GroveFetchRequest
+	): Promise<GroveFetchResponse> {
 		return doHandleFetch(this, request);
 	}
 }
 export type FetchHooks = {
 	intercept: {
 		context: {
-			request: RuntimeKitFetchRequest;
-			parsed: RuntimeKitFetchParsed;
+			request: GroveFetchRequest;
+			parsed: GroveFetchParsed;
 		};
 		props: {
-			response?: RuntimeKitFetchResponse;
+			response?: GroveFetchResponse;
 		};
 	};
 	request: {
 		context: {
-			request: RuntimeKitFetchRequest;
-			parsed: RuntimeKitFetchParsed;
+			request: GroveFetchRequest;
+			parsed: GroveFetchParsed;
 			client: ChannelCompatibleClient;
 		};
 		props: {
@@ -176,8 +176,8 @@ export type FetchHooks = {
 	};
 	preresponse: {
 		context: {
-			request: RuntimeKitFetchRequest;
-			parsed: RuntimeKitFetchParsed;
+			request: GroveFetchRequest;
+			parsed: GroveFetchParsed;
 		};
 		props: {
 			response: ChannelResponse;
@@ -185,11 +185,11 @@ export type FetchHooks = {
 	};
 	response: {
 		context: {
-			request: RuntimeKitFetchRequest;
-			parsed: RuntimeKitFetchParsed;
+			request: GroveFetchRequest;
+			parsed: GroveFetchParsed;
 		};
 		props: {
-			response: RuntimeKitFetchResponse;
+			response: GroveFetchResponse;
 		};
 	};
 };

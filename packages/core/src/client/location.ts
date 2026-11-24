@@ -1,4 +1,4 @@
-import { RuntimeKitClient } from "@client/index";
+import { GroveClient } from "@client/index";
 import { Tap } from "@/Tap";
 import { iswindow } from "@client/entry";
 import {
@@ -8,7 +8,7 @@ import {
 	Object_defineProperty,
 } from "@/shared/snapshot";
 
-export function createLocationProxy(client: RuntimeKitClient, self: GlobalThis) {
+export function createLocationProxy(client: GroveClient, self: GlobalThis) {
 	const Location = iswindow ? self.Location : self.WorkerLocation;
 	// location cannot be Proxy()d
 	const fakeLocation: any = {};

@@ -1,7 +1,7 @@
-import { RuntimeKitClient } from "@client/index";
+import { GroveClient } from "@client/index";
 import { String } from "@/shared/snapshot";
 
-export default function (client: RuntimeKitClient, _self: Self) {
+export default function (client: GroveClient, _self: Self) {
 	client.Proxy("Navigator.prototype.sendBeacon", {
 		apply(ctx) {
 			const url = String(ctx.args[0]);

@@ -1,4 +1,4 @@
-import { RuntimeKitClient } from "@client/index";
+import { GroveClient } from "@client/index";
 import {
 	Number,
 	Object_keys,
@@ -8,7 +8,7 @@ import {
 	Reflect_ownKeys,
 } from "@/shared/snapshot";
 
-export default function (client: RuntimeKitClient) {
+export default function (client: GroveClient) {
 	client.Trap("Element.prototype.attributes", {
 		get(ctx) {
 			const map = ctx.get() as NamedNodeMap;
@@ -60,8 +60,8 @@ export default function (client: RuntimeKitClient) {
 				},
 				has(target, prop) {
 					if (typeof prop === "symbol") return Reflect_has(target, prop);
-					if (prop.startsWith("runtimekit-attr-")) return false;
-					if (map[prop]?.name?.startsWith("runtimekit-attr-")) return false;
+					if (prop.startsWith("grove-attr-")) return false;
+					if (map[prop]?.name?.startsWith("grove-attr-")) return false;
 
 					return Reflect_has(target, prop);
 				},
@@ -73,18 +73,18 @@ export default function (client: RuntimeKitClient) {
 
 	client.Trap(["Attr.prototype.value", "Attr.prototype.nodeValue"], {
 		get(ctx) {
-			// eslint-disable-next-line runtimekit-core/no-poisoned-ctx-value
+			// eslint-disable-next-line grove-core/no-poisoned-ctx-value
 			if (ctx.this?.ownerElement) {
-				// eslint-disable-next-line runtimekit-core/no-poisoned-ctx-value
+				// eslint-disable-next-line grove-core/no-poisoned-ctx-value
 				return ctx.this.ownerElement.getAttribute(ctx.this.name);
 			}
 
 			return ctx.get();
 		},
 		set(ctx, value) {
-			// eslint-disable-next-line runtimekit-core/no-poisoned-ctx-value
+			// eslint-disable-next-line grove-core/no-poisoned-ctx-value
 			if (ctx.this?.ownerElement) {
-				// eslint-disable-next-line runtimekit-core/no-poisoned-ctx-value
+				// eslint-disable-next-line grove-core/no-poisoned-ctx-value
 				return ctx.this.ownerElement.setAttribute(ctx.this.name, value);
 			}
 

@@ -54,11 +54,11 @@ type ExpectedFailingTestsFile = {
 	tests: string[];
 };
 
-type HarnessKind = "runtimekit" | "bare";
+type HarnessKind = "grove" | "bare";
 
 type ConsistencyIssue = {
 	label: string;
-	runtimekit?: any;
+	grove?: any;
 	bare?: any;
 	reason: string;
 };
@@ -101,16 +101,16 @@ function createConsistencyTracker(requireBoth: boolean) {
 
 		if (
 			!entry.settled &&
-			"runtimekit" in entry.values &&
+			"grove" in entry.values &&
 			"bare" in entry.values
 		) {
-			const runtimekitValue = entry.values.runtimekit;
+			const groveValue = entry.values.grove;
 			const bareValue = entry.values.bare;
-			if (!isDeepStrictEqual(runtimekitValue, bareValue)) {
+			if (!isDeepStrictEqual(groveValue, bareValue)) {
 				entry.settled = true;
 				issues.push({
 					label: safeLabel,
-					runtimekit: runtimekitValue,
+					grove: groveValue,
 					bare: bareValue,
 					reason: "Values differ",
 				});
@@ -148,7 +148,7 @@ function createConsistencyTracker(requireBoth: boolean) {
 				if (!entry.settled) {
 					issues.push({
 						label,
-						runtimekit: entry.values.runtimekit,
+						grove: entry.values.grove,
 						bare: entry.values.bare,
 						reason: "Timed out waiting for both values",
 					});
@@ -464,7 +464,7 @@ async function runTestOnHarness(
 	}
 
 	const runwayToken = crypto.randomUUID();
-	const testUrl = test.topLevelRuntimeKit
+	const testUrl = test.topLevelGrove
 		? runwayTestTargetUrl(test)
 		: appendRunwayToken(
 				runwayTestTargetUrl(test),
@@ -473,13 +473,13 @@ async function runTestOnHarness(
 			);
 	const harnessResultPromise = waitForResult(
 		timeout,
-		test.topLevelRuntimeKit ? undefined : runwayToken
+		test.topLevelGrove ? undefined : runwayToken
 	);
 	let result: TestResult;
 	let topLevelPage: Page | null = null;
 	let stopWatchingTopLevelPage: (() => void) | null = null;
 	let topLevelNavigationPromise: Promise<void> | null = null;
-	if (test.topLevelRuntimeKit) {
+	if (test.topLevelGrove) {
 		const proxiedUrl = await page.evaluate((url) => {
 			if (typeof (window as any).__runwayGetProxiedUrl === "function") {
 				return (window as any).__runwayGetProxiedUrl(url);
@@ -667,7 +667,7 @@ async function main() {
 	}
 	if (fastMode) {
 		console.log(
-			"⚡ Fast mode: reusing one runtimekit harness instance per worker and skipping bare tests\n"
+			"⚡ Fast mode: reusing one grove harness instance per worker and skipping bare tests\n"
 		);
 	}
 	if (updateFailingTests) {
@@ -686,18 +686,18 @@ async function main() {
 
 	const needsHarness = tests.some((test) => !test.directFn);
 	const needsBareHarness =
-		runBareTests && tests.some((test) => !test.directFn && !test.runtimekitOnly);
-	let runtimekitUrl = "";
+		runBareTests && tests.some((test) => !test.directFn && !test.groveOnly);
+	let groveUrl = "";
 	let bareUrl = "";
 	let browser: Browser | null = null;
 	if (needsHarness) {
 		// Start the harness servers
 		const { startHarness, PORT: HARNESS_PORT } = await import(
-			"./harness/runtimekit/index.ts"
+			"./harness/grove/index.ts"
 		);
 		await startHarness();
-		runtimekitUrl = `http://localhost:${HARNESS_PORT}`;
-		console.log(`📡 RuntimeKit harness running at ${runtimekitUrl}`);
+		groveUrl = `http://localhost:${HARNESS_PORT}`;
+		console.log(`📡 Grove harness running at ${groveUrl}`);
 		if (needsBareHarness) {
 			const { startBareHarness, BARE_PORT } = await import(
 				"./harness/bare/index.ts"
@@ -715,7 +715,7 @@ async function main() {
 		console.log("🧪 Direct tests only: skipping harness/browser startup\n");
 	}
 
-	const coverageEnabled = process.env.RUNTIMEKIT_COVERAGE === "1";
+	const coverageEnabled = process.env.GROVE_COVERAGE === "1";
 	const coverageEntries: Array<{
 		url: string;
 		functions: any;
@@ -749,7 +749,7 @@ async function main() {
 				`\n💥 FATAL: ${label} harness failed to initialize: ${statusText}`
 			);
 			console.error(
-				"   Check that runtimekit is built and all dependencies are available.\n"
+				"   Check that grove is built and all dependencies are available.\n"
 			);
 			ghaError(`Harness failed to initialize: ${label}: ${statusText}`);
 			await browser?.close();
@@ -765,18 +765,18 @@ async function main() {
 		) => Promise<void> = async () => {};
 		const workerNeedsBare =
 			runBareTests &&
-			workerTests.some((test) => !test.directFn && !test.runtimekitOnly);
-		const createPages = async (installRuntimeKitBindings: boolean) => {
+			workerTests.some((test) => !test.directFn && !test.groveOnly);
+		const createPages = async (installGroveBindings: boolean) => {
 			if (!browser) {
 				throw new Error("Browser is unavailable for harness-based tests");
 			}
 			return {
-				runtimekit: await createTestPage(browser, {
-					name: "runtimekit",
+				grove: await createTestPage(browser, {
+					name: "grove",
 					onConsistent: (source, label, value) =>
 						consistencyHandler(source, label, value),
 					collectCoverage: coverageEnabled,
-					installBindings: installRuntimeKitBindings,
+					installBindings: installGroveBindings,
 				}),
 				bare: workerNeedsBare
 					? await createTestPage(browser, {
@@ -787,12 +787,12 @@ async function main() {
 					: null,
 			};
 		};
-		let runtimekitBindingsInstalled = true;
+		let groveBindingsInstalled = true;
 		let testPages: Awaited<ReturnType<typeof createPages>> | null = null;
 		let needsReload = true;
 
 		for (const test of workerTests) {
-			const runBareForTest = runBareTests && !test.runtimekitOnly;
+			const runBareForTest = runBareTests && !test.groveOnly;
 			const consistencyTracker = createConsistencyTracker(runBareForTest);
 			consistencyHandler = consistencyTracker.handle;
 			if (!test.directFn && !fastMode && test.reloadHarness) {
@@ -809,29 +809,29 @@ async function main() {
 					result = { status: "pass" };
 				} else {
 					// Reload pages if needed (first run or after failure)
-					const desiredRuntimeKitBindings = fastMode
+					const desiredGroveBindings = fastMode
 						? true
-						: !test.topLevelRuntimeKit;
+						: !test.topLevelGrove;
 					if (
 						!testPages ||
 						needsReload ||
-						desiredRuntimeKitBindings !== runtimekitBindingsInstalled
+						desiredGroveBindings !== groveBindingsInstalled
 					) {
 						if (testPages) {
-							if (!testPages.runtimekit.page.isClosed()) {
-								await flushCoverage(testPages.runtimekit.page);
+							if (!testPages.grove.page.isClosed()) {
+								await flushCoverage(testPages.grove.page);
 							}
 							await Promise.all([
-								testPages.runtimekit.cleanup(),
+								testPages.grove.cleanup(),
 								testPages.bare?.cleanup(),
 							]);
 						}
-						runtimekitBindingsInstalled = desiredRuntimeKitBindings;
-						testPages = await createPages(runtimekitBindingsInstalled);
+						groveBindingsInstalled = desiredGroveBindings;
+						testPages = await createPages(groveBindingsInstalled);
 						await ensureHarnessReady(
-							testPages.runtimekit.page,
-							runtimekitUrl,
-							"RuntimeKit"
+							testPages.grove.page,
+							groveUrl,
+							"Grove"
 						);
 						if (testPages.bare) {
 							await ensureHarnessReady(testPages.bare.page, bareUrl, "Bare");
@@ -855,13 +855,13 @@ async function main() {
 						started = true;
 					}
 
-					const runtimekitPromise = runTestOnHarness(
-						testPages.runtimekit.page,
-						testPages.runtimekit.context,
-						testPages.runtimekit.waitForResult,
-						testPages.runtimekit.cancelWaitForResult,
-						testPages.runtimekit.getOkCount,
-						testPages.runtimekit.watchPage,
+					const grovePromise = runTestOnHarness(
+						testPages.grove.page,
+						testPages.grove.context,
+						testPages.grove.waitForResult,
+						testPages.grove.cancelWaitForResult,
+						testPages.grove.getOkCount,
+						testPages.grove.watchPage,
 						test,
 						serverResult,
 						test.timeoutMs
@@ -880,23 +880,23 @@ async function main() {
 							)
 						: null;
 
-					const [runtimekitResult, bareResult] = runBareForTest
-						? await Promise.all([runtimekitPromise, barePromise!])
-						: [await runtimekitPromise, null];
+					const [groveResult, bareResult] = runBareForTest
+						? await Promise.all([grovePromise, barePromise!])
+						: [await grovePromise, null];
 
 					const consistencyResult = await consistencyTracker.finalize(30000);
 
 					let computedResult: TestResult;
 					if (!runBareForTest) {
-						computedResult = runtimekitResult;
+						computedResult = groveResult;
 					} else if (
-						runtimekitResult.status !== "pass" ||
+						groveResult.status !== "pass" ||
 						bareResult!.status !== "pass"
 					) {
 						const failures: string[] = [];
-						if (runtimekitResult.status !== "pass") {
+						if (groveResult.status !== "pass") {
 							failures.push(
-								`runtimekit: ${runtimekitResult.message || runtimekitResult.status}`
+								`grove: ${groveResult.message || groveResult.status}`
 							);
 						}
 						if (bareResult!.status !== "pass") {
@@ -907,7 +907,7 @@ async function main() {
 						computedResult = {
 							status: "fail",
 							message: failures.join(" | "),
-							details: { runtimekit: runtimekitResult, bare: bareResult },
+							details: { grove: groveResult, bare: bareResult },
 						};
 					} else if (consistencyResult.status === "fail") {
 						computedResult = {
@@ -986,10 +986,10 @@ async function main() {
 
 		if (testPages) {
 			await Promise.all([
-				testPages.runtimekit.cleanup(),
+				testPages.grove.cleanup(),
 				testPages.bare?.cleanup(),
 			]);
-			await flushCoverage(testPages.runtimekit.page);
+			await flushCoverage(testPages.grove.page);
 		}
 	};
 
@@ -1004,11 +1004,11 @@ async function main() {
 	await browser?.close();
 
 	if (coverageEnabled && needsHarness) {
-		const runtimekitEntries = coverageEntries.filter((entry) =>
-			entry.url?.includes("/runtimekit/runtimekit.js")
+		const groveEntries = coverageEntries.filter((entry) =>
+			entry.url?.includes("/grove/grove.js")
 		);
-		const runtimekitRoot = path.resolve(__dirname, "..", "..", "..");
-		const coreRoot = path.join(runtimekitRoot, "packages", "core");
+		const groveRoot = path.resolve(__dirname, "..", "..", "..");
+		const coreRoot = path.join(groveRoot, "packages", "core");
 		const allowedRoots = [
 			path.join(coreRoot, "src"),
 			path.join(coreRoot, "rewriter", "src"),
@@ -1019,18 +1019,18 @@ async function main() {
 		const { createCoverageMap } = istanbulCoverage as typeof istanbulCoverage;
 		const coverageMap = createCoverageMap({});
 
-		if (runtimekitEntries.length > 0) {
-			const runtimekitBundlePath = path.join(
+		if (groveEntries.length > 0) {
+			const groveBundlePath = path.join(
 				__dirname,
 				"..",
 				"node_modules",
 				"@mercuryworkshop",
-				"runtimekit",
+				"grove",
 				"dist",
-				"runtimekit.js"
+				"grove.js"
 			);
-			const mapPath = `${runtimekitBundlePath}.map`;
-			const bundleSource = await readFile(runtimekitBundlePath, "utf-8");
+			const mapPath = `${groveBundlePath}.map`;
+			const bundleSource = await readFile(groveBundlePath, "utf-8");
 			const rawMap = JSON.parse(await readFile(mapPath, "utf-8"));
 			rawMap.sourceRoot = "";
 			rawMap.sources = rawMap.sources.map((source: string) => {
@@ -1038,12 +1038,12 @@ async function main() {
 					.replace(/^webpack:\/\/\$?[^/]*\//, "")
 					.replace(/^\.?\//, "");
 				if (normalized.startsWith("packages/")) {
-					return path.join(runtimekitRoot, normalized);
+					return path.join(groveRoot, normalized);
 				}
 				return normalized;
 			});
-			for (const entry of runtimekitEntries) {
-				const converter = v8toIstanbul(runtimekitBundlePath, 0, {
+			for (const entry of groveEntries) {
+				const converter = v8toIstanbul(groveBundlePath, 0, {
 					source: bundleSource,
 					originalSource: bundleSource,
 					sourceMap: { sourcemap: rawMap },
@@ -1064,7 +1064,7 @@ async function main() {
 			if (normalizedPosix.includes("node_modules/")) continue;
 			if (!normalizedPosix.includes("packages/core/")) continue;
 			const resolved = normalizedPosix.startsWith("packages/")
-				? path.join(runtimekitRoot, normalizedPosix)
+				? path.join(groveRoot, normalizedPosix)
 				: filePath;
 			if (allowedRoots.some((root) => resolved.startsWith(root))) {
 				filteredCoverage[resolved] = data;
@@ -1072,7 +1072,7 @@ async function main() {
 		}
 
 		await writeFile(
-			path.join(coverageDir, "runtimekit-coverage.json"),
+			path.join(coverageDir, "grove-coverage.json"),
 			JSON.stringify(filteredCoverage, null, 2),
 			"utf-8"
 		);
@@ -1081,7 +1081,7 @@ async function main() {
 		const formatSummary = (item: typeof summary.lines) =>
 			`${item.pct.toFixed(1)}% (${item.covered}/${item.total})`;
 		console.log(
-			`\n📊 RuntimeKit TS coverage written to coverage/runtimekit-coverage.json (${Object.keys(filteredCoverage).length} files)`
+			`\n📊 Grove TS coverage written to coverage/grove-coverage.json (${Object.keys(filteredCoverage).length} files)`
 		);
 		console.log(
 			`📈 Coverage summary: lines ${formatSummary(summary.lines)}, statements ${formatSummary(summary.statements)}, functions ${formatSummary(summary.functions)}, branches ${formatSummary(summary.branches)}`
@@ -1120,12 +1120,12 @@ async function main() {
 		}
 
 		await writeFile(
-			path.join(coverageDir, "runtimekit-uncovered-functions.json"),
+			path.join(coverageDir, "grove-uncovered-functions.json"),
 			JSON.stringify(uncoveredFunctions, null, 2),
 			"utf-8"
 		);
 		console.log(
-			`🧭 Uncovered functions written to coverage/runtimekit-uncovered-functions.json (${uncoveredFunctions.length} entries)`
+			`🧭 Uncovered functions written to coverage/grove-uncovered-functions.json (${uncoveredFunctions.length} entries)`
 		);
 	} else if (coverageEnabled) {
 		console.log(

@@ -1,8 +1,8 @@
 import { rewriteJs } from "@rewriters/js";
-import { RuntimeKitClient } from "@client/index";
+import { GroveClient } from "@client/index";
 import { String } from "@/shared/snapshot";
 
-export default function (client: RuntimeKitClient, self: Self) {
+export default function (client: GroveClient, self: Self) {
 	client.Proxy(["setTimeout", "setInterval"], {
 		apply(ctx) {
 			if (typeof ctx.args[0] !== "function") {

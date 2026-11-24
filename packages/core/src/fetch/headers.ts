@@ -1,14 +1,14 @@
 import {
 	rewriteUrl,
-	RuntimeKitContext,
-	RuntimeKitHeaders,
+	GroveContext,
+	GroveHeaders,
 	unrewriteUrl,
 	URLMeta,
 } from "@/shared";
 import {
-	RuntimeKitFetchHandler,
-	RuntimeKitFetchParsed,
-	RuntimeKitFetchRequest,
+	GroveFetchHandler,
+	GroveFetchParsed,
+	GroveFetchRequest,
 } from ".";
 import { RawHeaders } from "@mercuryworkshop/proxy-transports";
 import { _URL, _Set } from "@/shared/snapshot";
@@ -50,7 +50,7 @@ const URL_HEADERS = new _Set([
 
 function rewriteLinkHeader(
 	link: string,
-	context: RuntimeKitContext,
+	context: GroveContext,
 	meta: URLMeta
 ) {
 	return link.replace(/<([^>]+)>/gi, (_match, p1) => {
@@ -59,12 +59,12 @@ function rewriteLinkHeader(
 }
 
 export async function rewriteResponseHeaders(
-	handler: RuntimeKitFetchHandler,
-	request: RuntimeKitFetchRequest,
-	parsed: RuntimeKitFetchParsed,
+	handler: GroveFetchHandler,
+	request: GroveFetchRequest,
+	parsed: GroveFetchParsed,
 	rawHeaders: RawHeaders
-): Promise<RuntimeKitHeaders> {
-	const headers = RuntimeKitHeaders.fromRawHeaders(rawHeaders);
+): Promise<GroveHeaders> {
+	const headers = GroveHeaders.fromRawHeaders(rawHeaders);
 
 	for (const cspHeader of SEC_HEADERS) {
 		headers.delete(cspHeader);
@@ -88,7 +88,7 @@ export async function rewriteResponseHeaders(
 		headers.set("content-type", "text/event-stream");
 	}
 
-	// runtimekit runtime can use features that permissions-policy blocks
+	// grove runtime can use features that permissions-policy blocks
 	headers.delete("permissions-policy");
 
 	// we handle this ourselves
@@ -117,13 +117,13 @@ export async function rewriteResponseHeaders(
 }
 
 export function rewriteRequestHeaders(
-	request: RuntimeKitFetchRequest,
-	handler: RuntimeKitFetchHandler,
-	parsed: RuntimeKitFetchParsed
-): RuntimeKitHeaders {
+	request: GroveFetchRequest,
+	handler: GroveFetchHandler,
+	parsed: GroveFetchParsed
+): GroveHeaders {
 	const headers = request.initialHeaders.clone();
 
-	// avoid leaking the runtimekit referer
+	// avoid leaking the grove referer
 	headers.delete("Referer");
 
 	const rawOriginUrl =
@@ -183,10 +183,10 @@ export function rewriteRequestHeaders(
  * to plain http:// non-loopback destinations.
  */
 function applyFetchMetadataHeaders(
-	headers: RuntimeKitHeaders,
-	request: RuntimeKitFetchRequest,
-	parsed: RuntimeKitFetchParsed,
-	handler: RuntimeKitFetchHandler
+	headers: GroveHeaders,
+	request: GroveFetchRequest,
+	parsed: GroveFetchParsed,
+	handler: GroveFetchHandler
 ) {
 	// Strip browser-attached Sec-Fetch-* (computed from the proxy URL space).
 	headers.delete("sec-fetch-site");
@@ -284,8 +284,8 @@ function applyFetchMetadataHeaders(
  *   `sj$cred` says otherwise.
  */
 function requestIncludesCredentials(
-	request: RuntimeKitFetchRequest,
-	parsed: RuntimeKitFetchParsed
+	request: GroveFetchRequest,
+	parsed: GroveFetchParsed
 ): boolean {
 	if (parsed.fetchCredentials === "omit") return false;
 	if (parsed.fetchCredentialsInclude) return true;
@@ -309,7 +309,7 @@ function requestIncludesCredentials(
  *
  * The browser's `event.request.mode` reported in the SW is unsafe to trust
  * for `fetch()` / `new Request()` calls — those compute mode against the
- * request URL's relationship to the page, and runtimekit has rewritten the URL
+ * request URL's relationship to the page, and grove has rewritten the URL
  * to be same-origin to the page, so the SW always sees "same-origin"
  * regardless of the page's actual `init.mode`. For HTML resource fetches
  * (`<script crossorigin>`, `<img crossorigin>`, …) the mode is derived from
@@ -328,8 +328,8 @@ function requestIncludesCredentials(
  *      proxy-URL computation).
  */
 function computeFetchMode(
-	request: RuntimeKitFetchRequest,
-	parsed: RuntimeKitFetchParsed
+	request: GroveFetchRequest,
+	parsed: GroveFetchParsed
 ): string {
 	if (parsed.fetchMode) return parsed.fetchMode;
 	const dest = parsed.destination;
@@ -350,7 +350,7 @@ function computeFetchMode(
 	// element's CORS attribute (`<script crossorigin>` ⇒ "cors", plain
 	// `<script>` ⇒ "no-cors"), so trust it. Reject "same-origin"/"navigate"
 	// since those indicate the value came from URL-origin matching against
-	// runtimekit's proxy origin and is meaningless to the destination.
+	// grove's proxy origin and is meaningless to the destination.
 	if (request.mode === "cors" || request.mode === "no-cors") {
 		return request.mode;
 	}
@@ -363,9 +363,9 @@ function computeFetchMode(
  * initiator regardless of Referer policy.
  */
 function resolveFetchInitiatorUrl(
-	request: RuntimeKitFetchRequest,
-	parsed: RuntimeKitFetchParsed,
-	handler: RuntimeKitFetchHandler
+	request: GroveFetchRequest,
+	parsed: GroveFetchParsed,
+	handler: GroveFetchHandler
 ): URL | undefined {
 	// On any hop after the first, the propagated initiator origin is the
 	// authoritative source. rawReferrer may have been replaced with the
@@ -384,7 +384,7 @@ function resolveFetchInitiatorUrl(
 	if (candidate.pathname.startsWith(handler.context.prefix.pathname)) {
 		return new _URL(unrewriteUrl(candidate, handler.context));
 	}
-	// The candidate URL is outside runtimekit's logical space (e.g. the runway
+	// The candidate URL is outside grove's logical space (e.g. the runway
 	// harness wrapper page, or a chrome:// page kicking off a navigation).
 	// There's no meaningful "initiator" in the proxied site's frame of
 	// reference, so treat it as a browser-initiated request — Sec-Fetch-Site
@@ -475,8 +475,8 @@ export function worstFetchSite(
  * "cross-site" – cross-site subresource or non-safe-method navigation (block Strict+Lax)
  */
 function computeSameSiteContext(
-	request: RuntimeKitFetchRequest,
-	parsed: RuntimeKitFetchParsed,
+	request: GroveFetchRequest,
+	parsed: GroveFetchParsed,
 	rawOriginUrl: URL | undefined
 ): "strict" | "lax" | "cross-site" {
 	// If a redirect chain previously passed through a cross-site origin, the

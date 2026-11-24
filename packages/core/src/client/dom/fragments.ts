@@ -1,11 +1,11 @@
 import { rewriteHtml } from "@rewriters/html";
-import { RuntimeKitClient } from "@client/index";
+import { GroveClient } from "@client/index";
 import { ForeignContext } from "@/shared/rewriters/html";
 import { String } from "@/shared/snapshot";
 
 // TODO: this function is untested / llm slop
 function foreignContextForRange(
-	client: RuntimeKitClient,
+	client: GroveClient,
 	range: Range
 ): ForeignContext {
 	const node = range.startContainer;
@@ -16,7 +16,7 @@ function foreignContextForRange(
 	return "html";
 }
 
-export default function (client: RuntimeKitClient, _self: Self) {
+export default function (client: GroveClient, _self: Self) {
 	client.Proxy("Range.prototype.createContextualFragment", {
 		apply(ctx) {
 			const html = String(ctx.args[0]);

@@ -1,4 +1,4 @@
-// HTTP cache plugin for RuntimeKitFetchHandler.
+// HTTP cache plugin for GroveFetchHandler.
 //
 // Service-worker `fetch` ignores the browser's HTTP cache, so without this
 // every navigation re-runs the full network fetch even for unchanged
@@ -45,13 +45,13 @@
 
 import {
 	ChannelResponse,
-	type RuntimeKitFetchRequest,
-	type RuntimeKitHeaders,
-} from "@mercuryworkshop/runtimekit";
-import { ManagedPlugin } from "@mercuryworkshop/runtimekit-controller";
-import type { Frame } from "@mercuryworkshop/runtimekit-controller";
+	type GroveFetchRequest,
+	type GroveHeaders,
+} from "@mercuryworkshop/grove";
+import { ManagedPlugin } from "@mercuryworkshop/grove-controller";
+import type { Frame } from "@mercuryworkshop/grove-controller";
 
-export const CACHE_NAME = "runtimekit-http-cache-v2";
+export const CACHE_NAME = "grove-http-cache-v2";
 
 /** Header recording when this entry entered the cache (ms since epoch). */
 const STORED_AT_HEADER = "x-sj-cached-at";
@@ -165,7 +165,7 @@ function isCacheableMethod(method: string): boolean {
 /**
  * Whether a response (status + Cache-Control + Vary) is allowed to be stored.
  * RFC 9110 §15.1 + RFC 9111 §3. `headers` is the upstream's raw response
- * headers, not yet through runtimekit's response-header rewriter.
+ * headers, not yet through grove's response-header rewriter.
  */
 function responseIsStorable(
 	status: number,
@@ -188,7 +188,7 @@ function responseIsStorable(
 /** Build a synthetic cache-key Request keyed by the *underlying* URL. */
 function buildCacheKeyRequest(
 	parsedUrl: string,
-	headers: RuntimeKitHeaders
+	headers: GroveHeaders
 ): Request {
 	const native = new Headers();
 	for (const [k, v] of headers.toRawHeaders()) {
@@ -295,7 +295,7 @@ export interface HttpCachePluginOptions {
 }
 
 /**
- * RFC-9111-ish HTTP cache for RuntimeKitFetchHandler.
+ * RFC-9111-ish HTTP cache for GroveFetchHandler.
  *
  * One instance can be installed onto multiple Frames -- the WeakMap of
  * "did this request come from cache?" book-keeping is per-instance, not
@@ -308,10 +308,10 @@ export class HttpCachePlugin extends ManagedPlugin {
 	// Marks requests whose `earlyResponse` we sourced from the cache, so the
 	// preresponse hook below knows not to re-store them. WeakMap keys are
 	// the request objects so entries clean themselves up automatically.
-	private cameFromCache = new WeakMap<RuntimeKitFetchRequest, true>();
+	private cameFromCache = new WeakMap<GroveFetchRequest, true>();
 
 	constructor(options: HttpCachePluginOptions = {}) {
-		super("runtimekit-http-cache", []);
+		super("grove-http-cache", []);
 		this.cacheName = options.cacheName ?? CACHE_NAME;
 	}
 
@@ -452,7 +452,7 @@ export class HttpCachePlugin extends ManagedPlugin {
 			} catch (err) {
 				// Cache.put can fail on opaque or oddly-headered responses;
 				// don't let a cache write failure break the actual fetch.
-				console.warn("[runtimekit-http-cache] cache.put failed:", err);
+				console.warn("[grove-http-cache] cache.put failed:", err);
 			}
 		});
 	}
@@ -468,7 +468,7 @@ export class HttpCachePlugin extends ManagedPlugin {
 			this.cachePromise = null;
 			return await caches.delete(this.cacheName);
 		} catch (err) {
-			console.error("[runtimekit-http-cache] bust failed:", err);
+			console.error("[grove-http-cache] bust failed:", err);
 			return false;
 		}
 	}

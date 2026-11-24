@@ -1,24 +1,24 @@
 import { createStore, css, type Component } from "dreamland/core";
-import type { RuntimeKitFlags } from "@mercuryworkshop/runtimekit";
-import { defaultConfigDev } from "@mercuryworkshop/runtimekit";
+import type { GroveFlags } from "@mercuryworkshop/grove";
+import { defaultConfigDev } from "@mercuryworkshop/grove";
 import { cachePlugin, controller } from "..";
 
-const flagStore = createStore<RuntimeKitFlags>(
+const flagStore = createStore<GroveFlags>(
 	{
 		...defaultConfigDev.flags,
 	},
 	{
-		ident: "runtimekit-flags",
+		ident: "grove-flags",
 		backing: "localstorage",
 		autosave: "auto",
 	}
 );
 
 // Flag descriptions for better UX
-const flagDescriptions: Record<keyof RuntimeKitFlags, string> = {
+const flagDescriptions: Record<keyof GroveFlags, string> = {
 	syncxhr: "Enable synchronous XMLHttpRequest support",
 	disableComputedWrap: "Skip deep js interception for better runtime speed",
-	cleanErrors: "prevent sites from noticing runtimekit stack frames",
+	cleanErrors: "prevent sites from noticing grove stack frames",
 	sourcemaps:
 		"prevent sites from noticing javascript transformations (at a performance cost)",
 	destructureRewrites:
@@ -30,7 +30,7 @@ const flagDescriptions: Record<keyof RuntimeKitFlags, string> = {
 	encapsulateWorkers:
 		"wrap web worker scripts in data urls to prevent scope issues (potentially buggy)",
 	scramitize:
-		"Trigger debugger whenever the string 'runtimekit' or the real location is detected in attacker code (debug feature)",
+		"Trigger debugger whenever the string 'grove' or the real location is detected in attacker code (debug feature)",
 	rewriterLogs: "Enable rewriter logging (debug feature)",
 	captureErrors: "Capture and handle JavaScript errors (debug feature)",
 	debugTrampolines: "Show proxied api in stack traces (debug feature)",
@@ -51,16 +51,16 @@ const FlagEditor: Component<
 	this.isOpen = false;
 	this.cacheBustStatus = "";
 
-	const toggleFlag = (flag: keyof RuntimeKitFlags, value: boolean) => {
+	const toggleFlag = (flag: keyof GroveFlags, value: boolean) => {
 		flagStore[flag] = value;
-		Object.assign(controller.runtimekitConfig.flags, flagStore);
+		Object.assign(controller.groveConfig.flags, flagStore);
 	};
 
 	const resetToDefaults = () => {
 		Object.assign(flagStore, {
 			...defaultConfigDev.flags,
 		});
-		Object.assign(controller.runtimekitConfig.flags, flagStore);
+		Object.assign(controller.groveConfig.flags, flagStore);
 	};
 
 	const bustCache = async () => {
@@ -78,7 +78,7 @@ const FlagEditor: Component<
 	};
 	cx.mount = async () => {
 		await controller.wait();
-		Object.assign(controller.runtimekitConfig.flags, flagStore);
+		Object.assign(controller.groveConfig.flags, flagStore);
 	};
 
 	return (
@@ -98,7 +98,7 @@ const FlagEditor: Component<
 			{use(this.isOpen).andThen(
 				<div class="editor-panel">
 					<div class="header">
-						<h3>RuntimeKit Feature Flags</h3>
+						<h3>Grove Feature Flags</h3>
 						<div class="header-actions">
 							<button class="cache-bust-button" on:click={bustCache}>
 								Bust Cache
@@ -112,7 +112,7 @@ const FlagEditor: Component<
 						<div class="cache-bust-status">{use(this.cacheBustStatus)}</div>
 					)}
 					<div class="flags-list">
-						{(Object.keys(flagStore) as Array<keyof RuntimeKitFlags>).map(
+						{(Object.keys(flagStore) as Array<keyof GroveFlags>).map(
 							(flag) => (
 								<label class="flag-item">
 									<input

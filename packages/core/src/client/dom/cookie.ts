@@ -1,6 +1,6 @@
-import { RuntimeKitClient } from "@client/index";
+import { GroveClient } from "@client/index";
 
-export default function (client: RuntimeKitClient, self: Self) {
+export default function (client: GroveClient, self: Self) {
 	client.Trap("Document.prototype.cookie", {
 		get() {
 			return client.context.cookieJar.getCookies(client.url, true);

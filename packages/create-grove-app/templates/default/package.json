@@ -16,8 +16,8 @@
 		"express": "^4.21.2"
 	},
 	"devDependencies": {
-		"@mercuryworkshop/runtimekit-utils": "*",
-		"@mercuryworkshop/runtimekit-controller": "*",
-		"@mercuryworkshop/runtimekit": "*"
+		"@mercuryworkshop/grove-utils": "*",
+		"@mercuryworkshop/grove-controller": "*",
+		"@mercuryworkshop/grove": "*"
 	}
 }

@@ -22,7 +22,7 @@ export const demoSettingsStore = createStore(
 		maxRequests: DEFAULT_MAX_REQUESTS,
 	},
 	{
-		ident: "runtimekit-demo-settings",
+		ident: "grove-demo-settings",
 		backing: "localstorage",
 		autosave: "auto",
 	}

@@ -14,7 +14,7 @@ test("committed build-support glue satisfies every unchanged WASM import", async
     const snippet = join(temp, "snippets/wasm-4b0f351a8e6eeb46/inline0.js");
     await sanitize(snippet, snippet);
     const glue = await import(pathToFileURL(join(temp, "wasm.mjs")));
-    const module = new WebAssembly.Module(await readFile("app/vendor/runtimekit.wasm"));
+    const module = new WebAssembly.Module(await readFile("app/vendor/grove.wasm"));
     assert.equal(WebAssembly.Module.imports(module).length, 20);
     assert.doesNotThrow(() => glue.initSync({ module }));
   } finally { await rm(temp, { recursive: true, force: true }); }

@@ -1,6 +1,6 @@
-import { RuntimeKitClient } from "@client/index";
+import { GroveClient } from "@client/index";
 
-export default function (client: RuntimeKitClient) {
+export default function (client: GroveClient) {
 	client.Proxy("console.clear", {
 		apply(ctx) {
 			// fuck you

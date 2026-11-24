@@ -1,6 +1,6 @@
-import { RuntimeKitClient } from "@client/index";
+import { GroveClient } from "@client/index";
 
-export default function (client: RuntimeKitClient, _self: Self) {
+export default function (client: GroveClient, _self: Self) {
 	client.Trap("origin", {
 		get() {
 			// TODO: this isn't right!!

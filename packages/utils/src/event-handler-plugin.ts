@@ -1,5 +1,5 @@
-import { ManagedPlugin } from "@mercuryworkshop/runtimekit-controller";
-import type { Frame } from "@mercuryworkshop/runtimekit-controller";
+import { ManagedPlugin } from "@mercuryworkshop/grove-controller";
+import type { Frame } from "@mercuryworkshop/grove-controller";
 import {
 	setupAlwaysLastBubble,
 	type AddAlwaysLastEventListener,

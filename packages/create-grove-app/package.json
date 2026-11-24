@@ -1,23 +1,23 @@
 {
-	"name": "create-proxy-app",
+	"name": "create-grove-app",
 	"version": "0.0.4",
-	"description": "Scaffold a RuntimeKit or Ultraviolet proxy app",
+	"description": "Scaffold a Grove or Ultraviolet proxy app",
 	"type": "module",
 	"packageManager": "pnpm@10.12.1",
 	"license": "AGPL-3.0-only",
 	"repository": {
 		"type": "git",
 		"url": "git+https://github.com/MercuryWorkshop/runtimekit.git",
-		"directory": "packages/create-proxy-app"
+		"directory": "packages/create-grove-app"
 	},
 	"bin": {
-		"create-proxy-app": "./dist/index.js"
+		"create-grove-app": "./dist/index.js"
 	},
 	"files": [
 		"dist"
 	],
 	"scripts": {
-		"build": "cd ../.. && rspack build --mode production --configName create-proxy-app",
+		"build": "cd ../.. && rspack build --mode production --configName create-grove-app",
 		"prepack": "pnpm run build",
 		"prepublishOnly": "npx only-allow pnpm",
 		"pub": "pnpm publish --no-git-checks --access public"

@@ -1,4 +1,4 @@
-import type { Controller } from "@mercuryworkshop/runtimekit-controller";
+import type { Controller } from "@mercuryworkshop/grove-controller";
 declare global {
 	function initBootstrap(): Promise<Controller>;
 }

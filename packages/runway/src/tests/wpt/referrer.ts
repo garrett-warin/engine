@@ -741,9 +741,9 @@ function wptPageTest(entryPath: string): Test {
 		name: testNameForPath(entryPath),
 		port: 0,
 		path: basePath,
-		runtimekitOnly: true,
+		groveOnly: true,
 		reloadHarness: true,
-		topLevelRuntimeKit: false,
+		topLevelGrove: false,
 		warmProxiedNavigation: true,
 		timeoutMs: 15000,
 		async start({ pass, fail }) {

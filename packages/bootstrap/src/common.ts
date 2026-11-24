@@ -1,12 +1,12 @@
 export const REGISTRY_URL = "https://registry.npmjs.org/";
-export const RUNTIMEKIT_PACKAGE_NAME = "@mercuryworkshop/runtimekit";
+export const GROVE_PACKAGE_NAME = "@mercuryworkshop/runtimekit";
 
-export const RUNTIMEKIT_CONTROLLER_PACKAGE_NAME =
+export const GROVE_CONTROLLER_PACKAGE_NAME =
 	"@mercuryworkshop/runtimekit-controller";
-export const RUNTIMEKIT_CONTROLLER_PINNED_MAJOR_VERSION = "0";
+export const GROVE_CONTROLLER_PINNED_MAJOR_VERSION = "0";
 
-export const RUNTIMEKIT_UTILS_PACKAGE_NAME = "@mercuryworkshop/runtimekit-utils";
-export const RUNTIMEKIT_UTILS_PINNED_MAJOR_VERSION = "0";
+export const GROVE_UTILS_PACKAGE_NAME = "@mercuryworkshop/runtimekit-utils";
+export const GROVE_UTILS_PINNED_MAJOR_VERSION = "0";
 
 export const SOCKET_ENGINE_TRANSPORT_PACKAGE_NAME = "@mercuryworkshop/epoxy-transport";
 export const SOCKET_ENGINE_TRANSPORT_PINNED_MAJOR_VERSION = "3";
@@ -23,23 +23,23 @@ export type BootstrapOptions = {
 
 	streamRelayPath: string;
 
-	runtimekitBundlePath: string;
-	runtimekitWasmPath: string;
-	runtimekitUtilsBundlePath: string;
+	groveBundlePath: string;
+	groveWasmPath: string;
+	groveUtilsBundlePath: string;
 
 	socketengineClientPath: string;
 	httpengineClientPath: string;
 	channelClientPath: string;
-	runtimekitControllerApiPath: string;
-	runtimekitControllerInjectPath: string;
-	runtimekitControllerSwPath: string;
+	groveControllerApiPath: string;
+	groveControllerInjectPath: string;
+	groveControllerSwPath: string;
 
 	bootstrapApiPath: string;
 	bootstrapInitPath: string;
 
-	runtimekitVersionPin?: string;
-	runtimekitControllerVersionPin?: string;
-	runtimekitUtilsVersionPin?: string;
+	groveVersionPin?: string;
+	groveControllerVersionPin?: string;
+	groveUtilsVersionPin?: string;
 	socketengineTransportVersionPin?: string;
 	httpengineTransportVersionPin?: string;
 	channelTransportVersionPin?: string;
@@ -55,10 +55,10 @@ export const defaultConfig: Partial<BootstrapOptions> = {
 	channelClientPath: "/clients/channel-client.js",
 	bootstrapInitPath: "/bootstrap-init.js",
 
-	runtimekitControllerApiPath: "/controller/controller.api.js",
-	runtimekitControllerInjectPath: "/controller/controller.inject.js",
-	runtimekitControllerSwPath: "/controller/controller.sw.js",
-	runtimekitBundlePath: "/runtime/runtimekit.js",
-	runtimekitWasmPath: "/runtime/runtimekit.wasm",
-	runtimekitUtilsBundlePath: "/runtime/runtimekit-utils.js",
+	groveControllerApiPath: "/controller/controller.api.js",
+	groveControllerInjectPath: "/controller/controller.inject.js",
+	groveControllerSwPath: "/controller/controller.sw.js",
+	groveBundlePath: "/runtime/grove.js",
+	groveWasmPath: "/runtime/grove.wasm",
+	groveUtilsBundlePath: "/runtime/grove-utils.js",
 };

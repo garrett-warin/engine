@@ -15,7 +15,7 @@ export default [
 			assertEqual(doc.querySelector("a").getAttribute("href"), "/x", "parsed attribute");
 			assertEqual(doc.body.innerHTML, '<a href="/x">y</a><img src="/i.png">', "innerHTML round trip");
 			assertEqual(doc.querySelector("a").href, location.origin + "/x", "resolved property");
-			assert(!doc.body.innerHTML.includes("runtimekit-attr"), "no internal attribute in innerHTML");
+			assert(!doc.body.innerHTML.includes("grove-attr"), "no internal attribute in innerHTML");
 		`,
 	}),
 	basicTest({
@@ -41,7 +41,7 @@ export default [
 			d.innerHTML = '<a href="/x"><img src="/i.png"></a>';
 			assertEqual(d.outerHTML, '<div><a href="/x"><img src="/i.png"></a></div>', "outerHTML");
 			assertEqual(d.innerHTML, '<a href="/x"><img src="/i.png"></a>', "innerHTML");
-			assert(!d.outerHTML.includes("runtimekit-attr"), "no internal attribute");
+			assert(!d.outerHTML.includes("grove-attr"), "no internal attribute");
 			const wrapper = document.createElement("section");
 			wrapper.appendChild(d);
 			assertEqual(wrapper.innerHTML, '<div><a href="/x"><img src="/i.png"></a></div>', "nested serialization");
@@ -86,14 +86,14 @@ export default [
 	basicTest({
 		// KNOWN FAILURE: serializeToString bypasses the un-rewriting that
 		// innerHTML/outerHTML do, exposing both the proxy URL and the internal
-		// runtimekit-attr-* bookkeeping attribute.
+		// grove-attr-* bookkeeping attribute.
 		name: "serialization-xmlserializer-live",
 		js: `
 			const a = document.createElement("a");
 			a.href = "/x";
 			const s = new XMLSerializer().serializeToString(a);
 			assert(!s.includes("/~/sj/"), "serializeToString must not expose the proxy URL: " + s);
-			assert(!s.includes("runtimekit-attr"), "nor the internal attribute: " + s);
+			assert(!s.includes("grove-attr"), "nor the internal attribute: " + s);
 		`,
 	}),
 	basicTest({
@@ -105,12 +105,12 @@ export default [
 			const doc = new DOMParser().parseFromString('<html><body><a href="/x">y</a></body></html>', "text/html");
 			const s = new XMLSerializer().serializeToString(doc.querySelector("a"));
 			assert(!s.includes("/~/sj/"), "parsed markup: " + s);
-			assert(!s.includes("runtimekit-attr"), "parsed markup internal attribute: " + s);
+			assert(!s.includes("grove-attr"), "parsed markup internal attribute: " + s);
 			const image = document.createElementNS("http://www.w3.org/2000/svg", "image");
 			image.setAttribute("href", "/s.png");
 			const svg = new XMLSerializer().serializeToString(image);
 			assert(!svg.includes("/~/sj/"), "svg: " + svg);
-			assert(!svg.includes("runtimekit-attr"), "svg internal attribute: " + svg);
+			assert(!svg.includes("grove-attr"), "svg internal attribute: " + svg);
 		`,
 	}),
 ];

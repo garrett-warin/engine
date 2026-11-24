@@ -1,7 +1,7 @@
 {
-	"name": "@mercuryworkshop/runtimekit-utils",
+	"name": "@mercuryworkshop/grove-utils",
 	"version": "0.0.3",
-	"description": "Utilities for RuntimeKit proxy integrations",
+	"description": "Utilities for Grove proxy integrations",
 	"type": "module",
 	"packageManager": "pnpm@10.12.1",
 	"license": "AGPL-3.0-only",
@@ -14,8 +14,8 @@
 	"exports": {
 		".": {
 			"types": "./dist/types/typesEntry.d.ts",
-			"import": "./dist/runtimekit-utils.mjs",
-			"default": "./dist/runtimekit-utils.js"
+			"import": "./dist/grove-utils.mjs",
+			"default": "./dist/grove-utils.js"
 		}
 	},
 	"files": [
@@ -28,12 +28,12 @@
 		"pub": "pnpm publish --no-git-checks --access public"
 	},
 	"peerDependencies": {
-		"@mercuryworkshop/runtimekit": "*",
-		"@mercuryworkshop/runtimekit-controller": "*"
+		"@mercuryworkshop/grove": "*",
+		"@mercuryworkshop/grove-controller": "*"
 	},
 	"devDependencies": {
-		"@mercuryworkshop/runtimekit": "workspace:*",
-		"@mercuryworkshop/runtimekit-controller": "workspace:*",
+		"@mercuryworkshop/grove": "workspace:*",
+		"@mercuryworkshop/grove-controller": "workspace:*",
 		"@types/serviceworker": "^0.0.197"
 	}
 }

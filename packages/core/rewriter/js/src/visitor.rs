@@ -168,9 +168,9 @@ where
 						}
 
 						// this is really annoying, we have to list out all the things that *aren't* expressions, you can't just check if it is one
-						// otherwise { 0:location } rewrites to { runtimekit$prop(0):location } which is obviously invalid syntax 
+						// otherwise { 0:location } rewrites to { grove$prop(0):location } which is obviously invalid syntax
 						PropertyKey::NumericLiteral(_) | PropertyKey::RegExpLiteral(_) | PropertyKey::BigIntLiteral(_) | PropertyKey::PrivateIdentifier(_) => {}
-						
+
 						_ => {
 							// { ["location"]: x } = self;
 							self.jschanges.add(rewrite!(p.name.span(), WrapProperty));
@@ -406,7 +406,7 @@ where
 		if let ForStatementLeft::VariableDeclaration(v) = &left {
 			self.handle_var_declarator(&v, &mut restids, &mut location_assigned);
 			// var { location } = ... is special because it will rewrite both the member access to $sj_location
-			// and the actual name of the variable to $runtimekit$temploc so we can set it back later
+			// and the actual name of the variable to $grove$temploc so we can set it back later
 			// but this means that the variable location never actually gets assigned
 			// so if it was actually meant to be a local, it won't exist in scope
 			// we flag this here so it will be appended tos the variable declarations in cleanup

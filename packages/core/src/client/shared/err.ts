@@ -1,8 +1,8 @@
 import { flagEnabled } from "@/shared";
-import { RuntimeKitClient } from "@client/index";
+import { GroveClient } from "@client/index";
 import { Reflect_apply } from "@/shared/snapshot";
 
-export const enabled = (client: RuntimeKitClient) =>
+export const enabled = (client: GroveClient) =>
 	client.flagEnabled("captureErrors");
 export function argdbg(arg, recurse = []) {
 	switch (typeof arg) {
@@ -28,7 +28,7 @@ export function argdbg(arg, recurse = []) {
 	}
 }
 
-export default function (client: RuntimeKitClient, self: GlobalThis) {
+export default function (client: GroveClient, self: GlobalThis) {
 	const warn = console.warn;
 	self.$scramerr = function scramerr(e) {
 		warn("CAUGHT ERROR", e);

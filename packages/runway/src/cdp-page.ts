@@ -31,7 +31,7 @@ export async function setupRunwayPageBindings(
 			case "clearCookies":
 				await context.clearCookies();
 				await page.evaluate(() => {
-					const clientKey = Symbol.for("runtimekit client global");
+					const clientKey = Symbol.for("grove client global");
 					const visited = new Set<Window>();
 					const clearWindow = (win: Window) => {
 						if (visited.has(win)) return;
@@ -45,7 +45,7 @@ export async function setupRunwayPageBindings(
 					};
 
 					(window as any).__runwayController?.cookieJar?.clear?.();
-					(window as any).__runwayRuntimeKitFrame?.context?.cookieJar?.clear?.();
+					(window as any).__runwayGroveFrame?.context?.cookieJar?.clear?.();
 					clearWindow(window);
 				});
 				return { ok: true };

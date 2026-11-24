@@ -44,7 +44,7 @@ const noGlobalsPlugin = {
 				],
 				messages: {
 					unexpectedGlobal:
-						"Do not use runtime global '{{name}}'. Access it through runtimekit wrappers instead.",
+						"Do not use runtime global '{{name}}'. Access it through grove wrappers instead.",
 				},
 			},
 			create(context) {

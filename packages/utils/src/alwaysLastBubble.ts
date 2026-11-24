@@ -1,7 +1,7 @@
-import type { RuntimeKitClient } from "@mercuryworkshop/runtimekit";
+import type { GroveClient } from "@mercuryworkshop/grove";
 
 export function setupAlwaysLastBubble(
-	client: RuntimeKitClient,
+	client: GroveClient,
 	whatToCapture: string[]
 ) {
 	// goal is to override the default behavior of clicking on an <a> link

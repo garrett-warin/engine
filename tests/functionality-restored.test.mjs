@@ -16,7 +16,7 @@ const operationalSources = [
 	"packages/controller/src/sw.ts",
 	"packages/core/src/shared/rewriters/url.ts",
 	"packages/core/src/fetch/fetch.ts",
-	"packages/runway/src/harness/runtimekit/index.ts",
+	"packages/runway/src/harness/grove/index.ts",
 	"devserver.ts",
 ];
 
@@ -50,7 +50,7 @@ for (const file of [
 	"packages/bootstrap/dist/bootstrap-static.js",
 	"packages/controller/dist/controller.api.js",
 	"packages/controller/dist/controller.sw.js",
-	"packages/core/dist/runtimekit.js",
+	"packages/core/dist/grove.js",
 ]) {
 	test(`${file} has no testing-only network guard`, async () => {
 		assert.doesNotMatch(

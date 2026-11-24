@@ -1,6 +1,6 @@
-import { RuntimeKitHeaders } from "@mercuryworkshop/runtimekit";
-import { ManagedPlugin } from "@mercuryworkshop/runtimekit-controller";
-import type { Frame } from "@mercuryworkshop/runtimekit-controller";
+import { GroveHeaders } from "@mercuryworkshop/grove";
+import { ManagedPlugin } from "@mercuryworkshop/grove-controller";
+import type { Frame } from "@mercuryworkshop/grove-controller";
 
 /**
  * Intercepts top-level navigation requests (triggered by clicking "open in new tab" on a link, or window.open)
@@ -23,12 +23,12 @@ export class CatchEscapedLinksPlugin extends ManagedPlugin {
 					body: "",
 					status: 302,
 					statusText: "Found",
-					headers: RuntimeKitHeaders.fromRawHeaders([
+					headers: GroveHeaders.fromRawHeaders([
 						["Location", String(location)],
 					]),
 				};
 			},
-			{ after: ["runtimekit-http-cache"] }
+			{ after: ["grove-http-cache"] }
 		);
 	}
 }

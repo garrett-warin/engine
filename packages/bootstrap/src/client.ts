@@ -3,7 +3,7 @@ import { BootstrapOptions } from "./common";
 import type { ProxyTransport } from "@mercuryworkshop/proxy-transports";
 import type SocketEngineClient from "@mercuryworkshop/epoxy-transport";
 import type HttpEngineClient from "@mercuryworkshop/libcurl-transport";
-import * as ControllerApi from "@mercuryworkshop/runtimekit-controller";
+import * as ControllerApi from "@mercuryworkshop/grove-controller";
 
 export async function init(cfg: BootstrapOptions) {
 	const sw = await registerSw(cfg.swPath);
@@ -11,9 +11,9 @@ export async function init(cfg: BootstrapOptions) {
 }
 
 export async function loadRest(sw: ServiceWorker, cfg: BootstrapOptions) {
-	await loadScript(cfg.runtimekitBundlePath);
-	await loadScript(cfg.runtimekitControllerApiPath);
-	await loadScript(cfg.runtimekitUtilsBundlePath);
+	await loadScript(cfg.groveBundlePath);
+	await loadScript(cfg.groveControllerApiPath);
+	await loadScript(cfg.groveUtilsBundlePath);
 
 	const resolvedStreamRelayPath = `${location.protocol === "https:" ? "wss:" : "ws:"}//${location.host}${cfg.streamRelayPath}`;
 
@@ -33,10 +33,10 @@ export async function loadRest(sw: ServiceWorker, cfg: BootstrapOptions) {
 		//...
 	}
 	const { Controller, config } = (window as any)
-		.$runtimekitController as typeof ControllerApi;
-	config.injectPath = cfg.runtimekitControllerInjectPath;
-	config.wasmPath = cfg.runtimekitWasmPath;
-	config.runtimekitPath = cfg.runtimekitBundlePath;
+		.$groveController as typeof ControllerApi;
+	config.injectPath = cfg.groveControllerInjectPath;
+	config.wasmPath = cfg.groveWasmPath;
+	config.grovePath = cfg.groveBundlePath;
 
 	const controller = new Controller({
 		serviceworker: sw,

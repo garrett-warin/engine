@@ -6,11 +6,11 @@ export default {
 			structured: false,
 			targets: [
 				{
-					src: "node_modules/@mercuryworkshop/runtimekit/dist/*",
-					dest: "runtimekit",
+					src: "node_modules/@mercuryworkshop/grove/dist/*",
+					dest: "grove",
 				},
 				{
-					src: "node_modules/@mercuryworkshop/runtimekit-controller/dist/*",
+					src: "node_modules/@mercuryworkshop/grove-controller/dist/*",
 					dest: "controller",
 				},
 			],

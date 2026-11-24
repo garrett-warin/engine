@@ -1,4 +1,4 @@
-declare const RUNTIMEKIT_EXPECTED_VERSION: string;
+declare const GROVE_EXPECTED_VERSION: string;
 declare const CONTROLLER_EXPECTED_VERSION: string;
 
 function assertVersionMatch(
@@ -14,27 +14,27 @@ function assertVersionMatch(
 }
 
 export function assertDependencyVersions() {
-	if (typeof $runtimekit === "undefined") {
+	if (typeof $grove === "undefined") {
 		console.error(
-			"@mercuryworkshop/runtimekit is not loaded. Load runtimekit before runtimekit-utils."
+			"@mercuryworkshop/grove is not loaded. Load grove before grove-utils."
 		);
 	}
 
 	assertVersionMatch(
-		"@mercuryworkshop/runtimekit",
-		RUNTIMEKIT_EXPECTED_VERSION,
-		$runtimekit.versionInfo.version
+		"@mercuryworkshop/grove",
+		GROVE_EXPECTED_VERSION,
+		$grove.versionInfo.version
 	);
 
-	if (typeof $runtimekitController === "undefined") {
+	if (typeof $groveController === "undefined") {
 		console.error(
-			"@mercuryworkshop/runtimekit-controller is not loaded. Load the controller before runtimekit-utils."
+			"@mercuryworkshop/grove-controller is not loaded. Load the controller before grove-utils."
 		);
 	}
 
 	assertVersionMatch(
-		"@mercuryworkshop/runtimekit-controller",
+		"@mercuryworkshop/grove-controller",
 		CONTROLLER_EXPECTED_VERSION,
-		$runtimekitController.VERSION
+		$groveController.VERSION
 	);
 }

@@ -3,8 +3,8 @@ import {
 	Number_isSafeInteger,
 	Error,
 } from "@/shared/snapshot";
-import { RUNTIMEKITCLIENT, RUNTIMEKITCLIENTNAME } from "@/symbols";
-import { ProxyCtx, RuntimeKitClient } from "@client/index";
+import { GROVECLIENT, GROVECLIENTNAME } from "@/symbols";
+import { ProxyCtx, GroveClient } from "@client/index";
 
 enum RewriteType {
 	Insert = 0,
@@ -37,7 +37,7 @@ function getEnd(rewrite: Rewrite): number {
 }
 
 function registerRewrites(
-	client: RuntimeKitClient,
+	client: GroveClient,
 	buf: Array<number>,
 	tag: string
 ) {
@@ -86,7 +86,7 @@ function extractTag(fn: string): [string, number, number] | null {
 	// function name()[possible whitespace]/*scramtag [index] [tag]*/[possible whitespace]{ ... }
 
 	const start = fn.indexOf(SCRAMTAG);
-	// no scramtag, probably native function or stolen from runtimekit
+	// no scramtag, probably native function or stolen from grove
 	if (start === -1) return null;
 
 	const end = fn.indexOf("*/", start);
@@ -110,7 +110,7 @@ function extractTag(fn: string): [string, number, number] | null {
 }
 
 function doUnrewrite(
-	client: RuntimeKitClient,
+	client: GroveClient,
 	ctx: ProxyCtx<"Function.prototype.toString", "apply">
 ) {
 	const stringified: string = ctx.fn.call(ctx.this);
@@ -165,10 +165,10 @@ function doUnrewrite(
 	return ctx.return(newString);
 }
 
-export const enabled = (client: RuntimeKitClient) =>
+export const enabled = (client: GroveClient) =>
 	client.flagEnabled("sourcemaps");
 
-export default function (client: RuntimeKitClient, self: Self) {
+export default function (client: GroveClient, self: Self) {
 	// every script will push a sourcemap
 	Object_defineProperty(self, client.config.globals.pushsourcemapfn, {
 		value: (buf: Array<number>, tag: string) => {

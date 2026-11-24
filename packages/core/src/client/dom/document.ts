@@ -1,9 +1,9 @@
 import { IncrementalHtmlRewriter, rewriteHtml } from "@rewriters/html";
-import { RuntimeKitClient } from "@client/index";
+import { GroveClient } from "@client/index";
 import { String, _URL } from "@/shared/snapshot";
 import { createReferrerString } from "@/fetch/util";
 
-export default function (client: RuntimeKitClient, _self: Self) {
+export default function (client: GroveClient, _self: Self) {
 	function resetDocumentWriter(document: Document) {
 		client.box.writeRewriters.delete(document);
 	}

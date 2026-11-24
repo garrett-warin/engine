@@ -26,32 +26,32 @@ jobs:
     name: Check Version
     runs-on: ubuntu-latest
     outputs:
-      runtimekit_version_changed: ${{ steps.check-runtimekit.outputs.version_changed }}
-      runtimekit_new_version: ${{ steps.check-runtimekit.outputs.new_version }}
-      runtimekit_tag_arg: ${{ steps.check-runtimekit.outputs.tag_arg }}
-      controller_version_changed: ${{ steps.check-runtimekit-controller.outputs.version_changed }}
-      controller_new_version: ${{ steps.check-runtimekit-controller.outputs.new_version }}
-      controller_tag_arg: ${{ steps.check-runtimekit-controller.outputs.tag_arg }}
-      utils_version_changed: ${{ steps.check-runtimekit-utils.outputs.version_changed }}
-      utils_new_version: ${{ steps.check-runtimekit-utils.outputs.new_version }}
-      utils_tag_arg: ${{ steps.check-runtimekit-utils.outputs.tag_arg }}
+      grove_version_changed: ${{ steps.check-grove.outputs.version_changed }}
+      grove_new_version: ${{ steps.check-grove.outputs.new_version }}
+      grove_tag_arg: ${{ steps.check-grove.outputs.tag_arg }}
+      controller_version_changed: ${{ steps.check-grove-controller.outputs.version_changed }}
+      controller_new_version: ${{ steps.check-grove-controller.outputs.new_version }}
+      controller_tag_arg: ${{ steps.check-grove-controller.outputs.tag_arg }}
+      utils_version_changed: ${{ steps.check-grove-utils.outputs.version_changed }}
+      utils_new_version: ${{ steps.check-grove-utils.outputs.new_version }}
+      utils_tag_arg: ${{ steps.check-grove-utils.outputs.tag_arg }}
       bootstrap_version_changed: ${{ steps.check-bootstrap.outputs.version_changed }}
       bootstrap_new_version: ${{ steps.check-bootstrap.outputs.new_version }}
       bootstrap_tag_arg: ${{ steps.check-bootstrap.outputs.tag_arg }}
-      create_proxy_app_version_changed: ${{ steps.check-create-proxy-app.outputs.version_changed }}
-      create_proxy_app_new_version: ${{ steps.check-create-proxy-app.outputs.new_version }}
-      create_proxy_app_tag_arg: ${{ steps.check-create-proxy-app.outputs.tag_arg }}
+      create_proxy_app_version_changed: ${{ steps.check-create-grove-app.outputs.version_changed }}
+      create_proxy_app_new_version: ${{ steps.check-create-grove-app.outputs.new_version }}
+      create_proxy_app_tag_arg: ${{ steps.check-create-grove-app.outputs.tag_arg }}
 
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Check the version (runtimekit/core)
-        id: check-runtimekit
+      - name: Check the version (grove/core)
+        id: check-grove
         run: |
           CURRENT_VERSION=$(jq -r .version packages/core/package.json)
           echo "Current version: $CURRENT_VERSION"
-          LATEST_VERSION=$(npm view @mercuryworkshop/runtimekit versions --json | jq -r '.[-1]' || echo "0.0.0")
+          LATEST_VERSION=$(npm view @mercuryworkshop/grove versions --json | jq -r '.[-1]' || echo "0.0.0")
           echo "Latest NPM version: $LATEST_VERSION"
 
           if [ "$LATEST_VERSION" != "$CURRENT_VERSION" ];
@@ -67,12 +67,12 @@ jobs:
             echo "version_changed=false" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Check the version (runtimekit/controller)
-        id: check-runtimekit-controller
+      - name: Check the version (grove/controller)
+        id: check-grove-controller
         run: |
           CURRENT_VERSION=$(jq -r .version packages/controller/package.json)
           echo "Current version: $CURRENT_VERSION"
-          LATEST_VERSION=$(npm view @mercuryworkshop/runtimekit-controller versions --json | jq -r '.[-1]' || echo "0.0.0")
+          LATEST_VERSION=$(npm view @mercuryworkshop/grove-controller versions --json | jq -r '.[-1]' || echo "0.0.0")
           echo "Latest NPM version: $LATEST_VERSION"
 
           if [ "$LATEST_VERSION" != "$CURRENT_VERSION" ];
@@ -88,12 +88,12 @@ jobs:
             echo "version_changed=false" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Check the version (runtimekit/utils)
-        id: check-runtimekit-utils
+      - name: Check the version (grove/utils)
+        id: check-grove-utils
         run: |
           CURRENT_VERSION=$(jq -r .version packages/utils/package.json)
           echo "Current version: $CURRENT_VERSION"
-          LATEST_VERSION=$(npm view @mercuryworkshop/runtimekit-utils versions --json | jq -r '.[-1]' || echo "0.0.0")
+          LATEST_VERSION=$(npm view @mercuryworkshop/grove-utils versions --json | jq -r '.[-1]' || echo "0.0.0")
           echo "Latest NPM version: $LATEST_VERSION"
 
           if [ "$LATEST_VERSION" != "$CURRENT_VERSION" ];
@@ -130,12 +130,12 @@ jobs:
             echo "version_changed=false" >> "$GITHUB_OUTPUT"
           fi
 
-      - name: Check the version (create-proxy-app)
-        id: check-create-proxy-app
+      - name: Check the version (create-grove-app)
+        id: check-create-grove-app
         run: |
-          CURRENT_VERSION=$(jq -r .version packages/create-proxy-app/package.json)
+          CURRENT_VERSION=$(jq -r .version packages/create-grove-app/package.json)
           echo "Current version: $CURRENT_VERSION"
-          LATEST_VERSION=$(npm view create-proxy-app versions --json | jq -r '.[-1]' || echo "0.0.0")
+          LATEST_VERSION=$(npm view create-grove-app versions --json | jq -r '.[-1]' || echo "0.0.0")
           echo "Latest NPM version: $LATEST_VERSION"
 
           if [ "$LATEST_VERSION" != "$CURRENT_VERSION" ];
@@ -152,7 +152,7 @@ jobs:
           fi
 
   build:
-    name: Build RuntimeKit
+    name: Build Grove
     runs-on: ubuntu-latest
 
     steps:
@@ -178,15 +178,15 @@ jobs:
           rewriter-path: packages/core/rewriter
           github-token: ${{ github.token }}
 
-      - name: Pack RuntimeKit
+      - name: Pack Grove
         run: pnpm pack
         working-directory: packages/core
 
-      - name: Pack RuntimeKit Controller
+      - name: Pack Grove Controller
         run: pnpm pack
         working-directory: packages/controller
 
-      - name: Pack RuntimeKit Utils
+      - name: Pack Grove Utils
         run: pnpm pack
         working-directory: packages/utils
 
@@ -194,45 +194,45 @@ jobs:
         run: pnpm pack
         working-directory: packages/bootstrap
 
-      - name: Pack create-proxy-app
+      - name: Pack create-grove-app
         run: pnpm pack
-        working-directory: packages/create-proxy-app
+        working-directory: packages/create-grove-app
 
-      - name: Upload Artifact (runtimekit/core)
+      - name: Upload Artifact (grove/core)
         uses: actions/upload-artifact@v4
         with:
-          name: runtimekit
+          name: grove
           path: packages/core/dist/*
 
-      - name: Upload Artifact (runtimekit/core) (packaged)
+      - name: Upload Artifact (grove/core) (packaged)
         uses: actions/upload-artifact@v4
         with:
-          name: runtimekit-package
-          path: packages/core/mercuryworkshop-runtimekit-*.tgz
+          name: grove-package
+          path: packages/core/mercuryworkshop-grove-*.tgz
 
-      - name: Upload Artifact (runtimekit/controller)
+      - name: Upload Artifact (grove/controller)
         uses: actions/upload-artifact@v4
         with:
-          name: runtimekit-controller
+          name: grove-controller
           path: packages/controller/dist/*
 
-      - name: Upload Artifact (runtimekit/controller) (packaged)
+      - name: Upload Artifact (grove/controller) (packaged)
         uses: actions/upload-artifact@v4
         with:
-          name: runtimekit-controller-package
-          path: packages/controller/mercuryworkshop-runtimekit-controller-*.tgz
+          name: grove-controller-package
+          path: packages/controller/mercuryworkshop-grove-controller-*.tgz
 
-      - name: Upload Artifact (runtimekit/utils)
+      - name: Upload Artifact (grove/utils)
         uses: actions/upload-artifact@v4
         with:
-          name: runtimekit-utils
+          name: grove-utils
           path: packages/utils/dist/*
 
-      - name: Upload Artifact (runtimekit/utils) (packaged)
+      - name: Upload Artifact (grove/utils) (packaged)
         uses: actions/upload-artifact@v4
         with:
-          name: runtimekit-utils-package
-          path: packages/utils/mercuryworkshop-runtimekit-utils-*.tgz
+          name: grove-utils-package
+          path: packages/utils/mercuryworkshop-grove-utils-*.tgz
 
       - name: Upload Artifact (proxy-bootstrap) (packaged)
         uses: actions/upload-artifact@v4
@@ -240,11 +240,11 @@ jobs:
           name: proxy-bootstrap-package
           path: packages/bootstrap/mercuryworkshop-proxy-bootstrap-*.tgz
 
-      - name: Upload Artifact (create-proxy-app) (packaged)
+      - name: Upload Artifact (create-grove-app) (packaged)
         uses: actions/upload-artifact@v4
         with:
-          name: create-proxy-app-package
-          path: packages/create-proxy-app/create-proxy-app-*.tgz
+          name: create-grove-app-package
+          path: packages/create-grove-app/create-grove-app-*.tgz
 
   package-validation:
     name: Validate Package Structure
@@ -270,18 +270,18 @@ jobs:
       - name: Get artifacts
         uses: actions/download-artifact@v4
         with:
-          name: runtimekit-package
+          name: grove-package
           path: packages/core
 
       - name: Extract package
-        run: tar xvf mercuryworkshop-runtimekit-*.tgz package --strip-components=1
+        run: tar xvf mercuryworkshop-grove-*.tgz package --strip-components=1
         working-directory: packages/core
 
       - name: Run package validation tests
         run: pnpm test:package
 
   tests:
-    name: Run RuntimeKit Tests
+    name: Run Grove Tests
     runs-on: ubuntu-latest
     needs: [build, package-validation]
 
@@ -303,16 +303,16 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: Get artifacts (runtimekit/core)
+      - name: Get artifacts (grove/core)
         uses: actions/download-artifact@v4
         with:
-          name: runtimekit
+          name: grove
           path: packages/core/dist
 
-      - name: Get artifacts (runtimekit/controller)
+      - name: Get artifacts (grove/controller)
         uses: actions/download-artifact@v4
         with:
-          name: runtimekit-controller
+          name: grove-controller
           path: packages/controller/dist
 
       - name: Install Playwright Chromium
@@ -363,13 +363,13 @@ jobs:
       - name: Get artifacts
         uses: actions/download-artifact@v4
         with:
-          name: runtimekit-package
+          name: grove-package
           path: .
 
       - name: Get artifacts
         uses: actions/download-artifact@v4
         with:
-          name: runtimekit-controller-package
+          name: grove-controller-package
           path: .
 
       - name: Release unstable build to GitHub
@@ -379,20 +379,20 @@ jobs:
           tag: latest
           commit: main
           body: "${{ github.event.head_commit.url }} ${{ github.event.head_commit.message }}"
-          artifacts: "mercuryworkshop-runtimekit-*.tgz,mercuryworkshop-runtimekit-controller-*.tgz"
+          artifacts: "mercuryworkshop-grove-*.tgz,mercuryworkshop-grove-controller-*.tgz"
           prerelease: true
 
-      - name: Release tagged version to GitHub (runtimekit/core)
-        if: needs.version-check.outputs.runtimekit_version_changed == 'true'
+      - name: Release tagged version to GitHub (grove/core)
+        if: needs.version-check.outputs.grove_version_changed == 'true'
         uses: ncipollo/release-action@v1
         with:
-          name: "${{ needs.version-check.outputs.runtimekit_new_version }}"
-          tag: "v${{ needs.version-check.outputs.runtimekit_new_version }}"
+          name: "${{ needs.version-check.outputs.grove_new_version }}"
+          tag: "v${{ needs.version-check.outputs.grove_new_version }}"
           commit: main
           body: "${{ github.event.head_commit.url }} ${{ github.event.head_commit.message }}"
-          artifacts: "mercuryworkshop-runtimekit-*.tgz"
+          artifacts: "mercuryworkshop-grove-*.tgz"
 
-      - name: Release tagged version to GitHub (runtimekit/controller)
+      - name: Release tagged version to GitHub (grove/controller)
         if: needs.version-check.outputs.controller_version_changed == 'true'
         uses: ncipollo/release-action@v1
         with:
@@ -400,15 +400,15 @@ jobs:
           tag: "v${{ needs.version-check.outputs.controller_new_version }}-controller"
           commit: main
           body: "${{ github.event.head_commit.url }} ${{ github.event.head_commit.message }}"
-          artifacts: "mercuryworkshop-runtimekit-controller-*.tgz"
+          artifacts: "mercuryworkshop-grove-controller-*.tgz"
           makeLatest: false
 
   publish:
-    name: Publish RuntimeKit to NPM
+    name: Publish Grove to NPM
     runs-on: ubuntu-latest
     needs: [version-check, build, package-validation, tests, rewritertests]
     permissions: write-all
-    if: ${{ (github.ref == 'refs/heads/main') && (needs.version-check.outputs.runtimekit_version_changed == 'true' || needs.version-check.outputs.controller_version_changed == 'true' || needs.version-check.outputs.bootstrap_version_changed == 'true' || needs.version-check.outputs.create_proxy_app_version_changed == 'true' || needs.version-check.outputs.utils_version_changed == 'true') }}
+    if: ${{ (github.ref == 'refs/heads/main') && (needs.version-check.outputs.grove_version_changed == 'true' || needs.version-check.outputs.controller_version_changed == 'true' || needs.version-check.outputs.bootstrap_version_changed == 'true' || needs.version-check.outputs.create_proxy_app_version_changed == 'true' || needs.version-check.outputs.utils_version_changed == 'true') }}
 
     steps:
       - name: Setup pnpm
@@ -422,23 +422,23 @@ jobs:
           node-version: "24"
           registry-url: "https://registry.npmjs.org"
 
-      - name: Get artifacts (runtimekit/core)
+      - name: Get artifacts (grove/core)
         uses: actions/download-artifact@v4
         with:
-          name: runtimekit-package
+          name: grove-package
           path: .
 
-      - name: Get artifacts (runtimekit/controller)
+      - name: Get artifacts (grove/controller)
         uses: actions/download-artifact@v4
         with:
-          name: runtimekit-controller-package
+          name: grove-controller-package
           path: .
 
-      - name: Get artifacts (runtimekit/utils)
+      - name: Get artifacts (grove/utils)
         if: needs.version-check.outputs.utils_version_changed == 'true'
         uses: actions/download-artifact@v4
         with:
-          name: runtimekit-utils-package
+          name: grove-utils-package
           path: .
 
       - name: Get artifacts (proxy-bootstrap)
@@ -448,32 +448,32 @@ jobs:
           name: proxy-bootstrap-package
           path: .
 
-      - name: Get artifacts (create-proxy-app)
+      - name: Get artifacts (create-grove-app)
         if: needs.version-check.outputs.create_proxy_app_version_changed == 'true'
         uses: actions/download-artifact@v4
         with:
-          name: create-proxy-app-package
+          name: create-grove-app-package
           path: .
 
-      - name: Publish RuntimeKit
-        if: needs.version-check.outputs.runtimekit_version_changed == 'true'
-        run: pnpm publish mercuryworkshop-runtimekit-${{ needs.version-check.outputs.runtimekit_new_version }}.tgz --access public --provenance ${{ needs.version-check.outputs.runtimekit_tag_arg }}
+      - name: Publish Grove
+        if: needs.version-check.outputs.grove_version_changed == 'true'
+        run: pnpm publish mercuryworkshop-grove-${{ needs.version-check.outputs.grove_new_version }}.tgz --access public --provenance ${{ needs.version-check.outputs.grove_tag_arg }}
 
-      - name: Publish RuntimeKit Controller
+      - name: Publish Grove Controller
         if: needs.version-check.outputs.controller_version_changed == 'true'
-        run: pnpm publish mercuryworkshop-runtimekit-controller-${{ needs.version-check.outputs.controller_new_version }}.tgz --access public --provenance ${{ needs.version-check.outputs.controller_tag_arg }}
+        run: pnpm publish mercuryworkshop-grove-controller-${{ needs.version-check.outputs.controller_new_version }}.tgz --access public --provenance ${{ needs.version-check.outputs.controller_tag_arg }}
 
-      - name: Publish RuntimeKit Utils
+      - name: Publish Grove Utils
         if: needs.version-check.outputs.utils_version_changed == 'true'
-        run: pnpm publish mercuryworkshop-runtimekit-utils-${{ needs.version-check.outputs.utils_new_version }}.tgz --access public --provenance ${{ needs.version-check.outputs.utils_tag_arg }}
+        run: pnpm publish mercuryworkshop-grove-utils-${{ needs.version-check.outputs.utils_new_version }}.tgz --access public --provenance ${{ needs.version-check.outputs.utils_tag_arg }}
 
       - name: Publish Proxy Bootstrap
         if: needs.version-check.outputs.bootstrap_version_changed == 'true'
         run: pnpm publish mercuryworkshop-proxy-bootstrap-${{ needs.version-check.outputs.bootstrap_new_version }}.tgz --access public --provenance ${{ needs.version-check.outputs.bootstrap_tag_arg }}
 
-      - name: Publish create-proxy-app
+      - name: Publish create-grove-app
         if: needs.version-check.outputs.create_proxy_app_version_changed == 'true'
-        run: pnpm publish create-proxy-app-${{ needs.version-check.outputs.create_proxy_app_new_version }}.tgz --access public --provenance ${{ needs.version-check.outputs.create_proxy_app_tag_arg }}
+        run: pnpm publish create-grove-app-${{ needs.version-check.outputs.create_proxy_app_new_version }}.tgz --access public --provenance ${{ needs.version-check.outputs.create_proxy_app_tag_arg }}
 
   frontend:
     name: Build Frontend
@@ -499,22 +499,22 @@ jobs:
       - name: Install dependencies
         run: pnpm install
 
-      - name: Get artifacts (runtimekit/core)
+      - name: Get artifacts (grove/core)
         uses: actions/download-artifact@v4
         with:
-          name: runtimekit
+          name: grove
           path: packages/core/dist
 
-      - name: Get artifacts (runtimekit/controller)
+      - name: Get artifacts (grove/controller)
         uses: actions/download-artifact@v4
         with:
-          name: runtimekit-controller
+          name: grove-controller
           path: packages/controller/dist
 
-      - name: Get artifacts (runtimekit/utils)
+      - name: Get artifacts (grove/utils)
         uses: actions/download-artifact@v4
         with:
-          name: runtimekit-utils
+          name: grove-utils
           path: packages/utils/dist
 
       - name: Build Frontend

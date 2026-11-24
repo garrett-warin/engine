@@ -1,4 +1,4 @@
-import { flagEnabled, RuntimeKitContext } from "@/shared";
+import { flagEnabled, GroveContext } from "@/shared";
 import { rewriteJs } from "@rewriters/js";
 import { URLMeta } from "@rewriters/url";
 import { TextDecoder_decode } from "@/shared/snapshot";
@@ -7,7 +7,7 @@ import { base64Encode } from "@/shared/util";
 export function rewriteWorkers(
 	js: string | Uint8Array,
 	url: string,
-	context: RuntimeKitContext,
+	context: GroveContext,
 	meta: URLMeta,
 	isModule: boolean
 ) {

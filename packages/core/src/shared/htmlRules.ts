@@ -1,14 +1,14 @@
 import { rewriteCss } from "@rewriters/css";
 import { rewriteHtml, rewriteSrcset } from "@rewriters/html";
 import { rewriteUrl, unrewriteBlob, URLMeta } from "@rewriters/url";
-import { RuntimeKitContext } from "@/shared";
+import { GroveContext } from "@/shared";
 import { _URL } from "./snapshot";
 
 export const htmlRules: {
 	[key: string]: "*" | string[] | ((...any: any[]) => string | null);
 	fn: (
 		value: string,
-		context: RuntimeKitContext,
+		context: GroveContext,
 		meta: URLMeta,
 		attrs?: Record<string, string | undefined>
 	) => string | null;
@@ -57,7 +57,7 @@ export const htmlRules: {
 			// The reviewed renderer must retain its native opaque-origin sandbox.
 			// Other engine rules are unchanged; Atlas adapts only this exact route.
 			try {
-				const source = attrs?.["runtimekit-attr-src"] || attrs?.src;
+				const source = attrs?.["grove-attr-src"] || attrs?.src;
 				if (source) {
 					const target = new _URL(source, meta.base);
 					const reviewed = ["https://chatgpt.com", "https://chat.openai.com"].includes(meta.origin.origin) && target.origin === "https://cdn.platform.openai.com" && target.pathname === "/deployments/dil/v14/runner.html";

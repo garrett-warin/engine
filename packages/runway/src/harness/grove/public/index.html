@@ -1,14 +1,14 @@
 <!doctype html>
 <html>
 	<head>
-		<title>RuntimeKit Test Harness</title>
-		<script src="/runtimekit/runtimekit.js"></script>
+		<title>Grove Test Harness</title>
+		<script src="/grove/grove.js"></script>
 		<script src="/controller/controller.api.js"></script>
 		<script src="/httpengine/index.js"></script>
 		<script src="/runway-cleartext-https-transport.js"></script>
 	</head>
 	<body>
-		<h1>RuntimeKit Test Harness</h1>
+		<h1>Grove Test Harness</h1>
 		<div id="status">Initializing...</div>
 		<button id="reload-btn" style="display: none; margin: 8px 0">
 			🔄 Reload Test
@@ -22,11 +22,11 @@
 			const statusEl = document.getElementById("status");
 			const testframe = document.getElementById("testframe");
 			const reloadBtn = document.getElementById("reload-btn");
-			const { Controller } = $runtimekitController;
+			const { Controller } = $groveController;
 			const HttpEngineClient = window.HttpEngineTransport.HttpEngineClient;
 
 			let controller;
-			let runtimekitFrame;
+			let groveFrame;
 
 			async function init() {
 				statusEl.textContent = "Registering service worker...";
@@ -80,8 +80,8 @@
 
 				await controller.ready;
 
-				runtimekitFrame = controller.createFrame(testframe);
-				window.__runwayRuntimeKitFrame = runtimekitFrame;
+				groveFrame = controller.createFrame(testframe);
+				window.__runwayGroveFrame = groveFrame;
 
 				statusEl.textContent = "Ready - waiting for test...";
 
@@ -92,11 +92,11 @@
 					reloadBtn.style.display = "inline-block";
 					// injectTestFunctions();
 					console.log("navigating to", url);
-					runtimekitFrame.go(url);
+					groveFrame.go(url);
 				};
 
 				window.__runwayGetProxiedUrl = (url) => {
-					return $runtimekit.rewriteUrl(url, runtimekitFrame.context, {
+					return $grove.rewriteUrl(url, groveFrame.context, {
 						origin: new URL(location.href),
 						base: new URL(location.href),
 					});

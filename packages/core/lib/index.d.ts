@@ -1,8 +1,8 @@
 /**
  * @fileoverview
- * RuntimeKit path export for routing functionality
+ * Grove path export for routing functionality
  */
 
-declare const runtimekitPath: string;
+declare const grovePath: string;
 
-export { runtimekitPath };
+export { grovePath };

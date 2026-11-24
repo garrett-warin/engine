@@ -325,7 +325,7 @@ export default [
 			const names = (await indexedDB.databases()).map((d) => d.name);
 			assert(names.includes("adversarial-db2"),
 				"databases() must report the page's own name, got " + JSON.stringify(names));
-			assert(!names.some((n) => n.includes("runtimekit")),
+			assert(!names.some((n) => n.includes("grove")),
 				"and must not expose proxy-internal databases: " + JSON.stringify(names));
 		`,
 	}),

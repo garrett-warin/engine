@@ -62,7 +62,7 @@ export default [
 			assert(await cookieStore.get("docname"),
 				"a document.cookie write is visible through cookieStore");
 			const all = (await cookieStore.getAll()).map((c) => c.name);
-			assert(!all.some((n) => n.includes("runtimekit")), "no proxy cookies exposed: " + JSON.stringify(all));
+			assert(!all.some((n) => n.includes("grove")), "no proxy cookies exposed: " + JSON.stringify(all));
 			await cookieStore.delete("csname");
 			assert(!document.cookie.includes("csname"), "cookieStore.delete: " + document.cookie);
 		`,

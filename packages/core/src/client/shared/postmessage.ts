@@ -1,10 +1,10 @@
 import { iswindow } from "@client/entry";
-import { RUNTIMEKITCLIENT } from "@/symbols";
-import { RuntimeKitClient } from "@client/index";
+import { GROVECLIENT } from "@/symbols";
+import { GroveClient } from "@client/index";
 import { Object_defineProperty } from "@/shared/snapshot";
 import { POLLUTANT } from "./realm";
 
-export default function (client: RuntimeKitClient, self: Self) {
+export default function (client: GroveClient, self: Self) {
 	const markNativeTransfers = (transfer: unknown) => {
 		if (!Array.isArray(transfer)) return;
 		for (const item of transfer) {
@@ -53,13 +53,13 @@ export default function (client: RuntimeKitClient, self: Self) {
 					constructor: { constructor: Function },
 				} = pollutant;
 
-				// invoking stolen function will give us the caller's globalThis, remember runtimekit has already proxied it!!!
+				// invoking stolen function will give us the caller's globalThis, remember grove has already proxied it!!!
 				const callerGlobalThisProxied: Self = Function("return globalThis")();
-				const callerClient = callerGlobalThisProxied[RUNTIMEKITCLIENT];
+				const callerClient = callerGlobalThisProxied[GROVECLIENT];
 
 				// this WOULD be enough but the source argument of MessageEvent has to return the caller's window
 				// and if we just call it normally it would be coming from here, which WILL NOT BE THE CALLER'S because the accessor is from the parent
-				// so with the stolen function we wrap postmessage so the source will truly be the caller's window (remember that function is runtimekit's!!!)
+				// so with the stolen function we wrap postmessage so the source will truly be the caller's window (remember that function is grove's!!!)
 				const wrappedPostMessage = Function("...args", "this(...args)");
 
 				// console.log(
@@ -73,11 +73,11 @@ export default function (client: RuntimeKitClient, self: Self) {
 					callerClient.url.href === "about:srcdoc" ||
 					callerClient.url.href === "about:blank";
 				ctx.args[0] = {
-					$runtimekit$messagetype: "window",
-					$runtimekit$origin: inherit
-						? callerClient.global.parent[RUNTIMEKITCLIENT].url.origin
+					$grove$messagetype: "window",
+					$grove$origin: inherit
+						? callerClient.global.parent[GROVECLIENT].url.origin
 						: callerClient.url.origin,
-					$runtimekit$data: ctx.args[0],
+					$grove$data: ctx.args[0],
 				};
 				// console.error("?", ctx.args);
 				// eval("debugger");
@@ -93,10 +93,10 @@ export default function (client: RuntimeKitClient, self: Self) {
 	client.Proxy("BroadcastChannel.prototype.postMessage", {
 		apply(ctx) {
 			ctx.args[0] = {
-				$runtimekit$messagetype: "window",
+				$grove$messagetype: "window",
 				// TODO: need to actually look up the broadcastchannel itself in box i think
-				$runtimekit$origin: client.url.origin,
-				$runtimekit$data: ctx.args[0],
+				$grove$origin: client.url.origin,
+				$grove$data: ctx.args[0],
 			};
 		},
 	});
@@ -115,8 +115,8 @@ export default function (client: RuntimeKitClient, self: Self) {
 			// origin/source doesn't need to be preserved - it's null in the message event
 
 			ctx.args[0] = {
-				$runtimekit$messagetype: "worker",
-				$runtimekit$data: ctx.args[0],
+				$grove$messagetype: "worker",
+				$grove$data: ctx.args[0],
 			};
 		},
 	});

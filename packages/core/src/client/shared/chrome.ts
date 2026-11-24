@@ -2,10 +2,10 @@
 // these are not worth emulating and typically cause issues
 
 import { iswindow } from "@client/entry";
-import { RuntimeKitClient } from "@client/index";
+import { GroveClient } from "@client/index";
 
 // type self as any here, most of these are not defined in the types
-export default function (client: RuntimeKitClient, self: any) {
+export default function (client: GroveClient, self: any) {
 	const del = (name: string) => {
 		const split = name.split(".");
 		const prop = split.pop();

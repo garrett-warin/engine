@@ -1,8 +1,8 @@
 import { rewriteBlob, unrewriteBlob } from "@rewriters/url";
-import { RuntimeKitClient } from "@client/index";
+import { GroveClient } from "@client/index";
 import { String } from "@/shared/snapshot";
 
-export default function (client: RuntimeKitClient) {
+export default function (client: GroveClient) {
 	// hide the origin from object urls from the page
 	client.Proxy("URL.createObjectURL", {
 		apply(ctx) {
@@ -18,7 +18,7 @@ export default function (client: RuntimeKitClient) {
 	client.Proxy("URL.revokeObjectURL", {
 		apply(ctx) {
 			setTimeout(() => {
-				// runtimekit rewrites blob urls to pass through the service worker first
+				// grove rewrites blob urls to pass through the service worker first
 				// this is neccesary if rewrites need to be applied to the blob
 				// the issue is that if you call revokeObjectURL immediately after using the blob
 				// the service worker will not have had time to download the blob

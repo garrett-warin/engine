@@ -6,16 +6,16 @@ declare global {
 		REAL_WASM: Uint8Array;
 
 		/**
-		 * The runtimekit client belonging to a window.
+		 * The grove client belonging to a window.
 		 */
-		[import("./symbols").RUNTIMEKITCLIENT]: import("./client").RuntimeKitClient;
+		[import("./symbols").GROVECLIENT]: import("./client").GroveClient;
 	}
 
 	interface Document {
 		/**
 		 * Should be the same as window.
 		 */
-		[import("./symbols").RUNTIMEKITCLIENT]: import("./client").RuntimeKitClient;
+		[import("./symbols").GROVECLIENT]: import("./client").GroveClient;
 	}
 }
 
@@ -27,6 +27,6 @@ declare const dbg: {
 	time: (meta: URLMeta, before: number, type: string) => void;
 };
 
-// eslint-disable-next-line runtimekit-core/no-globals
+// eslint-disable-next-line grove-core/no-globals
 declare type GlobalThis = typeof globalThis;
 declare type Self = Window & GlobalThis;

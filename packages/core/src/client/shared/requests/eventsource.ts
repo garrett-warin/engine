@@ -1,7 +1,7 @@
-import { RuntimeKitClient } from "@client/index";
+import { GroveClient } from "@client/index";
 import { String } from "@/shared/snapshot";
 
-export default function (client: RuntimeKitClient) {
+export default function (client: GroveClient) {
 	client.Proxy("EventSource", {
 		construct(ctx) {
 			const url = String(ctx.args[0]);

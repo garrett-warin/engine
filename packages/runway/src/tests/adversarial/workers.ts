@@ -1,6 +1,6 @@
 import { serverTest } from "../../testcommon.ts";
 
-// A worker gets its own runtimekit client with iswindow === false, its own
+// A worker gets its own grove client with iswindow === false, its own
 // location, and its own URL base for fetch/XHR/importScripts. Sites lean on
 // workers for anything expensive - PDF.js, monaco, wasm runtimes, analytics
 // batching - and bundlers emit module workers by default.

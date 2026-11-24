@@ -199,7 +199,7 @@ export default [
 			assertEqual(j.headers["authorization"], "Bearer tok", "Authorization header");
 			assertEqual(j.headers["accept"], "application/json", "Accept header");
 			assertEqual(j.headers["host"], location.host, "Host header matches the site: " + j.headers["host"]);
-			assert(!Object.keys(j.headers).some((h) => h.includes("runtimekit")),
+			assert(!Object.keys(j.headers).some((h) => h.includes("grove")),
 				"no proxy header reaches the origin: " + JSON.stringify(Object.keys(j.headers)));
 		`
 	),
@@ -213,7 +213,7 @@ export default [
 			assertEqual(r.headers.get("set-cookie"), null, "set-cookie is a forbidden response header");
 			assertEqual(r.headers.has("x-multi"), true, "has()");
 			const names = [...r.headers.keys()];
-			assert(!names.some((n) => n.includes("runtimekit")), "no proxy headers exposed: " + JSON.stringify(names));
+			assert(!names.some((n) => n.includes("grove")), "no proxy headers exposed: " + JSON.stringify(names));
 			assertEqual(await r.text(), "headers", "body");
 		`
 	),
@@ -394,7 +394,7 @@ export default [
 			assertEqual(xhr.getResponseHeader("set-cookie"), null, "set-cookie is forbidden");
 			const all = xhr.getAllResponseHeaders();
 			assert(all.includes("x-custom: customvalue"), "getAllResponseHeaders: " + JSON.stringify(all));
-			assert(!all.includes("runtimekit"), "no proxy headers listed: " + JSON.stringify(all));
+			assert(!all.includes("grove"), "no proxy headers listed: " + JSON.stringify(all));
 			assert(!all.toLowerCase().includes("set-cookie"), "no set-cookie listed: " + JSON.stringify(all));
 		`
 	),

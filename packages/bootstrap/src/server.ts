@@ -11,11 +11,11 @@ import {
 	HTTP_ENGINE_TRANSPORT_PACKAGE_NAME,
 	HTTP_ENGINE_TRANSPORT_PINNED_MAJOR_VERSION,
 	REGISTRY_URL,
-	RUNTIMEKIT_CONTROLLER_PACKAGE_NAME,
-	RUNTIMEKIT_CONTROLLER_PINNED_MAJOR_VERSION,
-	RUNTIMEKIT_PACKAGE_NAME,
-	RUNTIMEKIT_UTILS_PACKAGE_NAME,
-	RUNTIMEKIT_UTILS_PINNED_MAJOR_VERSION,
+	GROVE_CONTROLLER_PACKAGE_NAME,
+	GROVE_CONTROLLER_PINNED_MAJOR_VERSION,
+	GROVE_PACKAGE_NAME,
+	GROVE_UTILS_PACKAGE_NAME,
+	GROVE_UTILS_PINNED_MAJOR_VERSION,
 	BootstrapOptions,
 } from "./common";
 
@@ -47,10 +47,10 @@ function routeRequest(
 
 	if (req.url === config.swPath) {
 		res.writeHead(200, { "Content-Type": "application/javascript" });
-		res.end(`importScripts("${config.runtimekitControllerSwPath}");
+		res.end(`importScripts("${config.groveControllerSwPath}");
 addEventListener("fetch", (e) => {
-	if ($runtimekitController.shouldRoute(e)) {
-		e.respondWith($runtimekitController.route(e));
+	if ($groveController.shouldRoute(e)) {
+		e.respondWith($groveController.route(e));
 	}
 });
 `);
@@ -67,20 +67,20 @@ addEventListener("fetch", (e) => {
 	}
 
 	const pathsToFiles = {
-		[config.runtimekitControllerApiPath]:
+		[config.groveControllerApiPath]:
 			config.downloadedFilesDir + "controller/package/dist/controller.api.js",
-		[config.runtimekitControllerInjectPath]:
+		[config.groveControllerInjectPath]:
 			config.downloadedFilesDir +
 			"controller/package/dist/controller.inject.js",
-		[config.runtimekitControllerSwPath]:
+		[config.groveControllerSwPath]:
 			config.downloadedFilesDir + "controller/package/dist/controller.sw.js",
-		[config.runtimekitBundlePath]:
-			config.downloadedFilesDir + "runtimekit/package/dist/runtimekit.js",
-		[config.runtimekitWasmPath]:
-			config.downloadedFilesDir + "runtimekit/package/dist/runtimekit.wasm",
-		[config.runtimekitUtilsBundlePath]:
+		[config.groveBundlePath]:
+			config.downloadedFilesDir + "grove/package/dist/grove.js",
+		[config.groveWasmPath]:
+			config.downloadedFilesDir + "grove/package/dist/grove.wasm",
+		[config.groveUtilsBundlePath]:
 			config.downloadedFilesDir +
-			"runtimekit-utils/package/dist/runtimekit-utils.js",
+			"grove-utils/package/dist/grove-utils.js",
 
 		[config.httpengineClientPath]:
 			config.downloadedFilesDir + "httpengine-transport/package/dist/index.js",
@@ -160,17 +160,17 @@ async function getDownloadedPackageVersion(
 	}
 }
 
-async function updateRuntimeKit(controllerMeta: any) {
-	const runtimekitVersion =
-		controllerMeta.devDependencies["@mercuryworkshop/runtimekit"];
+async function updateGrove(controllerMeta: any) {
+	const groveVersion =
+		controllerMeta.devDependencies["@mercuryworkshop/grove"];
 
-	console.log(`Fetching runtimekit version: ${runtimekitVersion}`);
-	const runtimekitRes = await fetch(
-		`${REGISTRY_URL}${RUNTIMEKIT_PACKAGE_NAME}/${runtimekitVersion}`
+	console.log(`Fetching grove version: ${groveVersion}`);
+	const groveRes = await fetch(
+		`${REGISTRY_URL}${GROVE_PACKAGE_NAME}/${groveVersion}`
 	);
-	const runtimekitMeta = await runtimekitRes.json();
+	const groveMeta = await groveRes.json();
 
-	await unpack(runtimekitMeta.dist.tarball, "runtimekit");
+	await unpack(groveMeta.dist.tarball, "grove");
 	await unpack(controllerMeta.dist.tarball, "controller");
 }
 
@@ -232,7 +232,7 @@ export async function bootstrap(
 		await getDownloadedPackageVersion("controller");
 	if (downloadedControllerVersion) {
 		console.log(
-			`Found downloaded RuntimeKit Controller version: ${downloadedControllerVersion}`
+			`Found downloaded Grove Controller version: ${downloadedControllerVersion}`
 		);
 	}
 
@@ -255,34 +255,34 @@ export async function bootstrap(
 	}
 
 	const controllerMeta = await findLatestVersionOfPackage(
-		RUNTIMEKIT_CONTROLLER_PACKAGE_NAME,
-		RUNTIMEKIT_CONTROLLER_PINNED_MAJOR_VERSION
+		GROVE_CONTROLLER_PACKAGE_NAME,
+		GROVE_CONTROLLER_PINNED_MAJOR_VERSION
 	);
 
 	if (downloadedControllerVersion === controllerMeta.version) {
 		console.log(
-			`RuntimeKit Controller is up to date (version: ${downloadedControllerVersion}), skipping download.`
+			`Grove Controller is up to date (version: ${downloadedControllerVersion}), skipping download.`
 		);
 	} else {
-		await updateRuntimeKit(controllerMeta);
+		await updateGrove(controllerMeta);
 		console.log(
-			`Downloaded RuntimeKit Controller version: ${controllerMeta.version}`
+			`Downloaded Grove Controller version: ${controllerMeta.version}`
 		);
 	}
 
 	const downloadedUtilsVersion =
-		await getDownloadedPackageVersion("runtimekit-utils");
+		await getDownloadedPackageVersion("grove-utils");
 	const utilsMeta = await findLatestVersionOfPackage(
-		RUNTIMEKIT_UTILS_PACKAGE_NAME,
-		RUNTIMEKIT_UTILS_PINNED_MAJOR_VERSION
+		GROVE_UTILS_PACKAGE_NAME,
+		GROVE_UTILS_PINNED_MAJOR_VERSION
 	);
 	if (downloadedUtilsVersion === utilsMeta.version) {
 		console.log(
-			`RuntimeKit Utils is up to date (version: ${downloadedUtilsVersion}), skipping download.`
+			`Grove Utils is up to date (version: ${downloadedUtilsVersion}), skipping download.`
 		);
 	} else {
-		await unpack(utilsMeta.dist.tarball, "runtimekit-utils");
-		console.log(`Downloaded RuntimeKit Utils version: ${utilsMeta.version}`);
+		await unpack(utilsMeta.dist.tarball, "grove-utils");
+		console.log(`Downloaded Grove Utils version: ${utilsMeta.version}`);
 	}
 
 	return {

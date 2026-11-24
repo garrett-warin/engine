@@ -5,9 +5,9 @@ import { loadScript, registerSw } from "./clientcommon";
 import {
 	BootstrapOptions,
 	defaultConfig,
-	RUNTIMEKIT_CONTROLLER_PACKAGE_NAME,
-	RUNTIMEKIT_CONTROLLER_PINNED_MAJOR_VERSION,
-	RUNTIMEKIT_PACKAGE_NAME,
+	GROVE_CONTROLLER_PACKAGE_NAME,
+	GROVE_CONTROLLER_PINNED_MAJOR_VERSION,
+	GROVE_PACKAGE_NAME,
 	HTTP_ENGINE_TRANSPORT_PACKAGE_NAME,
 	HTTP_ENGINE_TRANSPORT_PINNED_MAJOR_VERSION,
 	SOCKET_ENGINE_TRANSPORT_PACKAGE_NAME,
@@ -17,7 +17,7 @@ import {
 const isSw = "ServiceWorkerGlobalScope" in globalThis;
 
 const CDN_URL = "https://cdn.jsdelivr.net/npm/";
-const DB_NAME = "runtimekit-bootstrap";
+const DB_NAME = "grove-bootstrap";
 const DB_VERSION = 1;
 const STORE_NAME = "files";
 
@@ -163,7 +163,7 @@ async function ensureFile(
 
 if (isSw) {
 	let config: BootstrapOptions;
-	let runtimekitControllerLoaded = false;
+	let groveControllerLoaded = false;
 
 	// Set up message listener immediately on initial evaluation
 	addEventListener("message", (event) => {
@@ -190,9 +190,9 @@ if (isSw) {
 
 		event.respondWith(
 			(async () => {
-				// If runtimekit controller is loaded, check if it should handle this request
-				if (runtimekitControllerLoaded && (self as any).$runtimekitController) {
-					const controller = (self as any).$runtimekitController;
+				// If grove controller is loaded, check if it should handle this request
+				if (groveControllerLoaded && (self as any).$groveController) {
+					const controller = (self as any).$groveController;
 					if (controller.shouldRoute(event)) {
 						return controller.route(event);
 					}
@@ -222,62 +222,62 @@ if (isSw) {
 		try {
 			// Find latest versions
 			const controllerVersion = await findLatestVersion(
-				RUNTIMEKIT_CONTROLLER_PACKAGE_NAME,
-				config.runtimekitControllerVersionPin ||
-					RUNTIMEKIT_CONTROLLER_PINNED_MAJOR_VERSION
+				GROVE_CONTROLLER_PACKAGE_NAME,
+				config.groveControllerVersionPin ||
+					GROVE_CONTROLLER_PINNED_MAJOR_VERSION
 			);
 
 			console.log(controllerVersion);
-			// Fetch controller to get runtimekit dependency version
-			const controllerPkgUrl = `${CDN_URL}${RUNTIMEKIT_CONTROLLER_PACKAGE_NAME}@${controllerVersion}/package.json`;
+			// Fetch controller to get grove dependency version
+			const controllerPkgUrl = `${CDN_URL}${GROVE_CONTROLLER_PACKAGE_NAME}@${controllerVersion}/package.json`;
 			const controllerPkgResponse = await fetch(controllerPkgUrl);
 			const controllerPkg = await controllerPkgResponse.json();
 
 			console.log(controllerPkg);
-			const runtimekitVersion = controllerPkg.dependencies[
-				RUNTIMEKIT_PACKAGE_NAME
+			const groveVersion = controllerPkg.dependencies[
+				GROVE_PACKAGE_NAME
 			].replace(/^[\^~]/, "");
 
-			// Download runtimekit files
+			// Download grove files
 			await ensureFile(
-				RUNTIMEKIT_PACKAGE_NAME,
-				runtimekitVersion,
-				"/dist/runtimekit.js",
+				GROVE_PACKAGE_NAME,
+				groveVersion,
+				"/dist/grove.js",
 				"application/javascript",
-				config.runtimekitBundlePath
+				config.groveBundlePath
 			);
 
 			await ensureFile(
-				RUNTIMEKIT_PACKAGE_NAME,
-				runtimekitVersion,
-				"/dist/runtimekit.wasm",
+				GROVE_PACKAGE_NAME,
+				groveVersion,
+				"/dist/grove.wasm",
 				"application/wasm",
-				config.runtimekitWasmPath
+				config.groveWasmPath
 			);
 
 			// Download controller files
 			await ensureFile(
-				RUNTIMEKIT_CONTROLLER_PACKAGE_NAME,
+				GROVE_CONTROLLER_PACKAGE_NAME,
 				controllerVersion,
 				"/dist/controller.api.js",
 				"application/javascript",
-				config.runtimekitControllerApiPath
+				config.groveControllerApiPath
 			);
 
 			await ensureFile(
-				RUNTIMEKIT_CONTROLLER_PACKAGE_NAME,
+				GROVE_CONTROLLER_PACKAGE_NAME,
 				controllerVersion,
 				"/dist/controller.inject.js",
 				"application/javascript",
-				config.runtimekitControllerInjectPath
+				config.groveControllerInjectPath
 			);
 
 			await ensureFile(
-				RUNTIMEKIT_CONTROLLER_PACKAGE_NAME,
+				GROVE_CONTROLLER_PACKAGE_NAME,
 				controllerVersion,
 				"/dist/controller.sw.js",
 				"application/javascript",
-				config.runtimekitControllerSwPath
+				config.groveControllerSwPath
 			);
 
 			// Download transport files
@@ -313,10 +313,10 @@ if (isSw) {
 
 			console.log("Bootstrap initialization complete");
 
-			// Import runtimekit controller SW script
+			// Import grove controller SW script
 			try {
 				// Fetch the controller script from IndexedDB cache
-				const cachedController = await getFile(config.runtimekitControllerSwPath);
+				const cachedController = await getFile(config.groveControllerSwPath);
 				if (cachedController) {
 					// Convert ArrayBuffer to string
 					const decoder = new TextDecoder();
@@ -326,13 +326,13 @@ if (isSw) {
 					// This avoids the issue with adding event listeners after initial evaluation
 					(0, eval)(scriptContent);
 
-					runtimekitControllerLoaded = true;
-					console.log("RuntimeKit controller loaded");
+					groveControllerLoaded = true;
+					console.log("Grove controller loaded");
 				} else {
-					console.error("RuntimeKit controller not found in cache");
+					console.error("Grove controller not found in cache");
 				}
 			} catch (error) {
-				console.error("Failed to load runtimekit controller:", error);
+				console.error("Failed to load grove controller:", error);
 			}
 
 			// Send init done message

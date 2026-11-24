@@ -1,4 +1,4 @@
-import { RuntimeKitConfig, RuntimeKitFlags, RuntimeKitVersionInfo } from "@/types";
+import { GroveConfig, GroveFlags, GroveVersionInfo } from "@/types";
 import DomHandler, { Element } from "domhandler";
 import { URLMeta } from "@rewriters/url";
 import { CookieJar } from "./cookie";
@@ -13,8 +13,8 @@ export * from "./mime";
 export * from "./rewriters";
 
 export function flagEnabled(
-	flag: keyof RuntimeKitFlags,
-	context: RuntimeKitContext,
+	flag: keyof GroveFlags,
+	context: GroveContext,
 	url: URL
 ): boolean {
 	const value = context.config.flags[flag];
@@ -27,7 +27,7 @@ export function flagEnabled(
 
 	return value;
 }
-export type RuntimeKitInterface = {
+export type GroveInterface = {
 	codecEncode: (input: string) => string;
 	codecDecode: (input: string) => string;
 
@@ -44,10 +44,10 @@ export type RuntimeKitInterface = {
 	): string;
 };
 
-export type RuntimeKitContext = {
-	config: RuntimeKitConfig;
+export type GroveContext = {
+	config: GroveConfig;
 	prefix: URL;
-	interface: RuntimeKitInterface;
+	interface: GroveInterface;
 	cookieJar: CookieJar;
 	hooks?: {
 		rewriter: {

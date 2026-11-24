@@ -95,7 +95,7 @@ function renderExternalStub(names: string[], globalName: string): string {
 
 /**
  * Generates a thin "external" stub that re-exports the entries of a globally
- * assigned bundle (e.g. `self.$runtimekit`). Consumers that import the package
+ * assigned bundle (e.g. `self.$grove`). Consumers that import the package
  * by its bare name pay zero source size — the stub is just a destructure of
  * the global.
  *
@@ -223,13 +223,13 @@ class TypeScriptDeclarationsPlugin {
 }
 
 // Project directories
-const runtimekitdir = join(__dirname, "packages/core");
+const grovedir = join(__dirname, "packages/core");
 const controllerdir = join(__dirname, "packages/controller");
 const utilsdir = join(__dirname, "packages/utils");
 const bootstrapdir = join(__dirname, "packages/bootstrap");
-const createproxyappdir = join(__dirname, "packages/create-proxy-app");
+const createproxyappdir = join(__dirname, "packages/create-grove-app");
 
-const wasmPath = join(runtimekitdir, "dist/runtimekit.wasm");
+const wasmPath = join(grovedir, "dist/grove.wasm");
 let wasmB64: string;
 const wasmBuf = await readFile(wasmPath);
 wasmB64 = wasmBuf.toString("base64");
@@ -350,15 +350,15 @@ const createGenericConfig = (options: Partial<RspackOptions>) => {
   return defineConfig(merged);
 };
 
-type RuntimeKitBuildConfig = {
+type GroveBuildConfig = {
   entry: RspackOptions["entry"];
   output: RspackOptions["output"];
   rewriterWasm: string;
   extraConfig?: Partial<RspackOptions>;
   name: string;
 };
-// Common configuration options for runtimekit builds
-const createRuntimeKitConfig = (options: RuntimeKitBuildConfig) => {
+// Common configuration options for grove builds
+const createGroveConfig = (options: GroveBuildConfig) => {
   const { entry, output, rewriterWasm, extraConfig = {}, name } = options;
 
   return createGenericConfig({
@@ -366,20 +366,20 @@ const createRuntimeKitConfig = (options: RuntimeKitBuildConfig) => {
     entry,
     resolve: {
       alias: {
-        "@rewriters": join(runtimekitdir, "src/shared/rewriters"),
-        "@client": join(runtimekitdir, "src/client"),
-        "@": join(runtimekitdir, "src"),
+        "@rewriters": join(grovedir, "src/shared/rewriters"),
+        "@client": join(grovedir, "src/client"),
+        "@": join(grovedir, "src"),
       },
     },
     output,
     plugins: [
       // new TsCheckerRspackPlugin({
       // 	typescript: {
-      // 		configFile: resolve(runtimekitdir, "tsconfig.json"),
+      // 		configFile: resolve(grovedir, "tsconfig.json"),
       // 	},
       // }),
       new rspack.ProvidePlugin({
-        dbg: [join(runtimekitdir, "src/log.ts"), "default"],
+        dbg: [join(grovedir, "src/log.ts"), "default"],
       }),
       new rspack.DefinePlugin({
         REWRITERWASM: rewriterWasm,
@@ -420,21 +420,21 @@ const createRuntimeKitConfig = (options: RuntimeKitBuildConfig) => {
 };
 
 const sjpackagemeta = JSON.parse(
-  await readFile(join(runtimekitdir, "package.json"), "utf-8"),
+  await readFile(join(grovedir, "package.json"), "utf-8"),
 );
-// IIFE build that does NOT bundle the wasm, exposes global $runtimekit
-const iifeConfig = createRuntimeKitConfig({
-  name: "runtimekit-iife",
+// IIFE build that does NOT bundle the wasm, exposes global $grove
+const iifeConfig = createGroveConfig({
+  name: "grove-iife",
   entry: {
-    main: join(runtimekitdir, "src/index.ts"),
+    main: join(grovedir, "src/index.ts"),
   },
   output: {
-    filename: "runtimekit.js",
-    path: join(runtimekitdir, "dist"),
+    filename: "grove.js",
+    path: join(grovedir, "dist"),
     iife: true,
     library: {
       type: "assign",
-      name: "self.$runtimekit",
+      name: "self.$grove",
     },
   },
   rewriterWasm: "undefined",
@@ -445,19 +445,19 @@ const iifeConfig = createRuntimeKitConfig({
   },
 });
 
-// IIFE build that BUNDLES the wasm and exposes global $runtimekit
-const iifeBundledConfig = createRuntimeKitConfig({
-  name: "runtimekit-iife-bundled",
+// IIFE build that BUNDLES the wasm and exposes global $grove
+const iifeBundledConfig = createGroveConfig({
+  name: "grove-iife-bundled",
   entry: {
-    bundled: join(runtimekitdir, "src/index.ts"),
+    bundled: join(grovedir, "src/index.ts"),
   },
   output: {
-    filename: "runtimekit_bundled.js",
-    path: join(runtimekitdir, "dist"),
+    filename: "grove_bundled.js",
+    path: join(grovedir, "dist"),
     iife: true,
     library: {
       type: "assign",
-      name: "self.$runtimekit",
+      name: "self.$grove",
     },
   },
   rewriterWasm: JSON.stringify(wasmB64),
@@ -469,14 +469,14 @@ const iifeBundledConfig = createRuntimeKitConfig({
 });
 
 // no wasm bundled, esmodule
-const moduleConfig = createRuntimeKitConfig({
-  name: "runtimekit-esmodule",
+const moduleConfig = createGroveConfig({
+  name: "grove-esmodule",
   entry: {
-    bundle: join(runtimekitdir, "src/index.ts"),
+    bundle: join(grovedir, "src/index.ts"),
   },
   output: {
-    filename: "runtimekit.mjs",
-    path: join(runtimekitdir, "dist"),
+    filename: "grove.mjs",
+    path: join(grovedir, "dist"),
     libraryTarget: "module",
     iife: false,
   },
@@ -493,22 +493,22 @@ const moduleConfig = createRuntimeKitConfig({
 });
 moduleConfig.plugins!.push(
   new ExternalStubPlugin({
-    bundleFilename: "runtimekit.mjs",
-    stubFilename: "runtimekit-external.mjs",
-    globalName: "$runtimekit",
-    outputDir: join(runtimekitdir, "dist"),
+    bundleFilename: "grove.mjs",
+    stubFilename: "grove-external.mjs",
+    globalName: "$grove",
+    outputDir: join(grovedir, "dist"),
   }),
 );
 
 // wasm bundled, esmodule
-const moduleBundledConfig = createRuntimeKitConfig({
-  name: "runtimekit-esmodule-bundled",
+const moduleBundledConfig = createGroveConfig({
+  name: "grove-esmodule-bundled",
   entry: {
-    bundle: join(runtimekitdir, "src/index.ts"),
+    bundle: join(grovedir, "src/index.ts"),
   },
   output: {
-    filename: "runtimekit_bundled.mjs",
-    path: join(runtimekitdir, "dist"),
+    filename: "grove_bundled.mjs",
+    path: join(grovedir, "dist"),
     libraryTarget: "module",
     iife: false,
   },
@@ -525,17 +525,17 @@ const moduleBundledConfig = createRuntimeKitConfig({
 
 // Type generation configuration
 const typeGenConfig = defineConfig({
-  context: runtimekitdir,
+  context: grovedir,
   entry: {
     index: "./src/index.ts",
   },
   output: {
-    path: join(runtimekitdir, "dist/temp-types-build"),
+    path: join(grovedir, "dist/temp-types-build"),
     filename: "[name].js",
   },
   plugins: [
     new TypeScriptDeclarationsPlugin(
-      runtimekitdir,
+      grovedir,
       "dist/temp-types-build",
       "tsconfig.types.json",
       true,
@@ -544,9 +544,9 @@ const typeGenConfig = defineConfig({
   resolve: {
     extensions: [".ts", ".js"],
     alias: {
-      "@rewriters": join(runtimekitdir, "src/shared/rewriters"),
-      "@client": join(runtimekitdir, "src/client"),
-      "@": join(runtimekitdir, "src"),
+      "@rewriters": join(grovedir, "src/shared/rewriters"),
+      "@client": join(grovedir, "src/client"),
+      "@": join(grovedir, "src"),
     },
   },
   module: {
@@ -559,13 +559,13 @@ const controllermeta = JSON.parse(
   await readFile(join(controllerdir, "package.json"), "utf-8"),
 );
 const controllerVersionDefines = new rspack.DefinePlugin({
-  RUNTIMEKIT_EXPECTED_VERSION: JSON.stringify(sjpackagemeta.version),
+  GROVE_EXPECTED_VERSION: JSON.stringify(sjpackagemeta.version),
   CONTROLLER_VERSION: JSON.stringify(controllermeta.version),
 });
 
 const controllerConfig = createGenericConfig({
-  name: "runtimekit-controller",
-  dependencies: ["runtimekit-esmodule"],
+  name: "grove-controller",
+  dependencies: ["grove-esmodule"],
   entry: {
     api: join(controllerdir, "src/index.ts"),
     inject: join(controllerdir, "src/inject.ts"),
@@ -577,7 +577,7 @@ const controllerConfig = createGenericConfig({
     iife: true,
     library: {
       type: "var",
-      name: "$runtimekitController",
+      name: "$groveController",
     },
   },
   target: "web",
@@ -586,7 +586,7 @@ const controllerConfig = createGenericConfig({
     new ExternalStubPlugin({
       bundleFilename: "controller.api.js",
       stubFilename: "controller-external.mjs",
-      globalName: "$runtimekitController",
+      globalName: "$groveController",
       outputDir: join(controllerdir, "dist"),
     }),
     new TypeScriptDeclarationsPlugin(
@@ -599,23 +599,23 @@ const controllerConfig = createGenericConfig({
 });
 
 const utilsVersionDefines = new rspack.DefinePlugin({
-  RUNTIMEKIT_EXPECTED_VERSION: JSON.stringify(sjpackagemeta.version),
+  GROVE_EXPECTED_VERSION: JSON.stringify(sjpackagemeta.version),
   CONTROLLER_EXPECTED_VERSION: JSON.stringify(controllermeta.version),
 });
 
 const utilsIifeConfig = createGenericConfig({
-  name: "runtimekit-utils-iife",
-  dependencies: ["runtimekit-esmodule", "runtimekit-controller"],
+  name: "grove-utils-iife",
+  dependencies: ["grove-esmodule", "grove-controller"],
   entry: {
     main: join(utilsdir, "src/index.ts"),
   },
   output: {
-    filename: "runtimekit-utils.js",
+    filename: "grove-utils.js",
     path: join(utilsdir, "dist"),
     iife: true,
     library: {
       type: "assign",
-      name: "self.$runtimekitUtils",
+      name: "self.$groveUtils",
     },
   },
   target: "web",
@@ -631,13 +631,13 @@ const utilsIifeConfig = createGenericConfig({
 });
 
 const utilsModuleConfig = createGenericConfig({
-  name: "runtimekit-utils-esmodule",
-  dependencies: ["runtimekit-esmodule", "runtimekit-controller"],
+  name: "grove-utils-esmodule",
+  dependencies: ["grove-esmodule", "grove-controller"],
   entry: {
     main: join(utilsdir, "src/index.ts"),
   },
   output: {
-    filename: "runtimekit-utils.mjs",
+    filename: "grove-utils.mjs",
     path: join(utilsdir, "dist"),
     libraryTarget: "module",
     iife: false,
@@ -658,7 +658,7 @@ const utilsModuleConfig = createGenericConfig({
 });
 
 const bootstrapConfig = createGenericConfig({
-  name: "runtimekit-bootstrap",
+  name: "grove-bootstrap",
   entry: {
     server: join(bootstrapdir, "src/server.ts"),
     client: join(bootstrapdir, "src/client.ts"),
@@ -692,7 +692,7 @@ const bootstrapConfig = createGenericConfig({
 });
 
 const bootstrapStaticConfig = createGenericConfig({
-  name: "runtimekit-bootstrap-static",
+  name: "grove-bootstrap-static",
   entry: {
     static: join(bootstrapdir, "src/static.ts"),
   },
@@ -704,7 +704,7 @@ const bootstrapStaticConfig = createGenericConfig({
 });
 
 const createProxyAppConfig = createGenericConfig({
-  name: "create-proxy-app",
+  name: "create-grove-app",
   entry: {
     index: join(createproxyappdir, "src/index.ts"),
   },

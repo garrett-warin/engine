@@ -2,9 +2,9 @@ import LoadInterstitial from "./components/LoadInterstitial";
 import App from "./App";
 import HttpEngineClient from "@mercuryworkshop/libcurl-transport";
 import SocketEngineClient from "@mercuryworkshop/epoxy-transport";
-import { defaultConfigDev } from "@mercuryworkshop/runtimekit";
-import { Controller } from "@mercuryworkshop/runtimekit-controller";
-import { HttpCachePlugin } from "@mercuryworkshop/runtimekit-utils";
+import { defaultConfigDev } from "@mercuryworkshop/grove";
+import { Controller } from "@mercuryworkshop/grove-controller";
+import { HttpCachePlugin } from "@mercuryworkshop/grove-utils";
 import { demoSettingsStore } from "./store";
 
 let app = document.getElementById("app")!;
@@ -96,7 +96,7 @@ async function init() {
 		controller = new Controller({
 			serviceworker: readySw,
 			transport: getTransport(),
-			runtimekitConfig: defaultConfigDev,
+			groveConfig: defaultConfigDev,
 		});
 		await controller.wait();
 		console.log(controller);

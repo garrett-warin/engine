@@ -1,4 +1,4 @@
-import { flagEnabled, RuntimeKitContext } from "@/shared";
+import { flagEnabled, GroveContext } from "@/shared";
 import { URLMeta } from "@rewriters/url";
 
 import { getRewriter, JsRewriterOutput } from "@rewriters/wasm";
@@ -11,7 +11,7 @@ import {
 	Performance_now,
 } from "../snapshot";
 
-// eslint-disable-next-line runtimekit-core/no-globals
+// eslint-disable-next-line grove-core/no-globals
 Error.stackTraceLimit = 50;
 
 type RewriterResult = {
@@ -23,7 +23,7 @@ type RewriterResult = {
 function rewriteJsWasm(
 	input: string | Uint8Array,
 	source: string | null,
-	context: RuntimeKitContext,
+	context: GroveContext,
 	meta: URLMeta,
 	isModule: boolean
 ): RewriterResult {
@@ -96,7 +96,7 @@ function rewriteJsWasm(
 export function rewriteJsInner(
 	js: string | Uint8Array,
 	url: string | null,
-	context: RuntimeKitContext,
+	context: GroveContext,
 	meta: URLMeta,
 	isModule = false
 ) {
@@ -106,7 +106,7 @@ export function rewriteJsInner(
 export function rewriteJs(
 	js: string | Uint8Array,
 	url: string | null,
-	context: RuntimeKitContext,
+	context: GroveContext,
 	meta: URLMeta,
 	isModule = false
 ): string | Uint8Array {

@@ -1,7 +1,7 @@
 import { rewriteCss } from "@rewriters/css";
-import { RuntimeKitClient } from "@client/index";
+import { GroveClient } from "@client/index";
 
-export default function (client: RuntimeKitClient, _self: Self) {
+export default function (client: GroveClient, _self: Self) {
 	client.Proxy("FontFace", {
 		construct(ctx) {
 			if (typeof ctx.args[1] !== "string") return;

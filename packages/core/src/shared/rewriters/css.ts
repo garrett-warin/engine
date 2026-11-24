@@ -1,23 +1,23 @@
 import { URLMeta, rewriteUrl, unrewriteUrl } from "@rewriters/url";
-import { RuntimeKitContext } from "@/shared";
+import { GroveContext } from "@/shared";
 import { String } from "@/shared/snapshot";
 
 export function rewriteCss(
 	css: string,
-	context: RuntimeKitContext,
+	context: GroveContext,
 	meta: URLMeta
 ) {
 	return handleCss("rewrite", css, context, meta);
 }
 
-export function unrewriteCss(css: string, context: RuntimeKitContext) {
+export function unrewriteCss(css: string, context: GroveContext) {
 	return handleCss("unrewrite", css, context);
 }
 
 function handleCss(
 	type: "rewrite" | "unrewrite",
 	css: string,
-	context: RuntimeKitContext,
+	context: GroveContext,
 	meta?: URLMeta
 ) {
 	// regex from vk6 (https://github.com/ading2210)

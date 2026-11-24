@@ -1,35 +1,35 @@
-// NOTE: this is the entrypoint for runtimekit.bundle.js
-// as such it exports everything in runtimekit
-// the entry point for runtimekit.all.js (what most sites wil use) is entry.ts
+// NOTE: this is the entrypoint for grove.bundle.js
+// as such it exports everything in grove
+// the entry point for grove.all.js (what most sites wil use) is entry.ts
 
 import "./global.d";
 import { atob } from "@/shared/snapshot";
 import { setWasm } from "@rewriters/wasm";
-import { RuntimeKitVersionInfo, RuntimeKitConfig } from "./types";
+import { GroveVersionInfo, GroveConfig } from "./types";
 
 declare const VERSION: string;
 declare const COMMITHASH: string;
 declare const BUILDDATE: string;
-export const versionInfo: RuntimeKitVersionInfo = {
+export const versionInfo: GroveVersionInfo = {
 	version: VERSION,
 	build: COMMITHASH,
 	date: BUILDDATE,
 };
 
-export const defaultConfig: RuntimeKitConfig = {
+export const defaultConfig: GroveConfig = {
 	globals: {
-		wrapfn: "$runtimekit$wrap",
-		wrappropertybase: "$runtimekit__",
-		wrappropertyfn: "$runtimekit$prop",
-		cleanrestfn: "$runtimekit$clean",
-		importfn: "$runtimekit$import",
-		rewritefn: "$runtimekit$rewrite",
-		metafn: "$runtimekit$meta",
-		wrappostmessagefn: "$runtimekit$wrappostmessage",
-		pushsourcemapfn: "$runtimekit$pushsourcemap",
-		trysetfn: "$runtimekit$tryset",
-		templocid: "$runtimekit$temploc",
-		tempunusedid: "$runtimekit$tempunused",
+		wrapfn: "$grove$wrap",
+		wrappropertybase: "$grove__",
+		wrappropertyfn: "$grove$prop",
+		cleanrestfn: "$grove$clean",
+		importfn: "$grove$import",
+		rewritefn: "$grove$rewrite",
+		metafn: "$grove$meta",
+		wrappostmessagefn: "$grove$wrappostmessage",
+		pushsourcemapfn: "$grove$pushsourcemap",
+		trysetfn: "$grove$tryset",
+		templocid: "$grove$temploc",
+		tempunusedid: "$grove$tempunused",
 	},
 	flags: {
 		syncxhr: false,
@@ -50,7 +50,7 @@ export const defaultConfig: RuntimeKitConfig = {
 	maskedfiles: [],
 };
 
-export const defaultConfigDev: RuntimeKitConfig = {
+export const defaultConfigDev: GroveConfig = {
 	...defaultConfig,
 	flags: {
 		...defaultConfig.flags,

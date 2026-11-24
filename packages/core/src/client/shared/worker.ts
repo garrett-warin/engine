@@ -1,6 +1,6 @@
-import { RuntimeKitClient } from "@client/index";
+import { GroveClient } from "@client/index";
 
-export default function (client: RuntimeKitClient, _self: GlobalThis) {
+export default function (client: GroveClient, _self: GlobalThis) {
 	client.Proxy("Worker", {
 		construct(ctx) {
 			ctx.args[0] = client.rewriteUrl(ctx.args[0], {
@@ -17,7 +17,7 @@ export default function (client: RuntimeKitClient, _self: GlobalThis) {
 			// 		"Worker.prototype.postMessage",
 			// 		worker,
 			// 		{
-			// 			$runtimekit$type: "transportbrokerinit",
+			// 			$grove$type: "transportbrokerinit",
 			// 			port,
 			// 		},
 			// 		[port]
@@ -55,7 +55,7 @@ export default function (client: RuntimeKitClient, _self: GlobalThis) {
 			// 		"MessagePort.prototype.postMessage",
 			// 		worker.port,
 			// 		{
-			// 			$runtimekit$type: "transportbrokerinit",
+			// 			$grove$type: "transportbrokerinit",
 			// 			port,
 			// 		},
 			// 		[port]

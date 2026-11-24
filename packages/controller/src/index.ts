@@ -6,20 +6,20 @@ import {
 import { deepmerge } from "@fastify/deepmerge";
 import {
 	CookieJar,
-	defaultConfig as runtimekitDefaultConfig,
+	defaultConfig as groveDefaultConfig,
 	rewriteUrl,
-	RuntimeKitFetchHandler,
-	RuntimeKitHeaders,
+	GroveFetchHandler,
+	GroveHeaders,
 	setWasm,
 	Tap,
 	type CookieSyncOptions,
 	type FetchHooks,
-	type RuntimeKitConfig,
-	type RuntimeKitContext,
-	type RuntimeKitInterface,
+	type GroveConfig,
+	type GroveContext,
+	type GroveInterface,
 	type TrackedHistoryState,
 	Plugin,
-} from "@mercuryworkshop/runtimekit";
+} from "@mercuryworkshop/grove";
 import { CONTROLLERFRAME } from "./symbols";
 import type {
 	FrameInitHooks,
@@ -31,14 +31,14 @@ import type {
 	WebSocketMessage,
 	FrameErrorHooks,
 } from "./types";
-import { assertRuntimeRuntimeKitVersion } from "./version";
+import { assertRuntimeGroveVersion } from "./version";
 
 export { VERSION } from "./version";
-export { assertRuntimeRuntimeKitVersion } from "./version";
+export { assertRuntimeGroveVersion } from "./version";
 
 export type Config = {
 	prefix: string;
-	runtimekitPath: string;
+	grovePath: string;
 	injectPath: string;
 	wasmPath: string;
 	virtualWasmPath: string;
@@ -47,10 +47,10 @@ export type Config = {
 
 export const config: Config = {
 	prefix: "/~/sj/",
-	runtimekitPath: "/runtimekit/runtimekit.js",
+	grovePath: "/grove/grove.js",
 	injectPath: "/controller/controller.inject.js",
-	wasmPath: "/runtimekit/runtimekit.wasm",
-	virtualWasmPath: "runtimekit.wasm.js",
+	wasmPath: "/grove/grove.wasm",
+	virtualWasmPath: "grove.wasm.js",
 	codec: {
 		encode: (url: string) => {
 			if (!url) return url;
@@ -65,12 +65,12 @@ export const config: Config = {
 	},
 };
 
-const runtimekitConfig: Partial<RuntimeKitConfig> = {
+const groveConfig: Partial<GroveConfig> = {
 	flags: {
-		...runtimekitDefaultConfig.flags,
+		...groveDefaultConfig.flags,
 		allowFailedIntercepts: true,
 	},
-	maskedfiles: ["inject.js", "runtimekit.wasm.js"],
+	maskedfiles: ["inject.js", "grove.wasm.js"],
 };
 
 type PersistedCookieState = {
@@ -206,7 +206,7 @@ type ControllerInit = {
 	serviceworker: ServiceWorker;
 	transport: ProxyTransport;
 	config?: Partial<Config>;
-	runtimekitConfig?: Partial<RuntimeKitConfig>;
+	groveConfig?: Partial<GroveConfig>;
 };
 
 type FrameOptions = {
@@ -216,7 +216,7 @@ type FrameOptions = {
 export class Controller {
 	id: string;
 	config: Config;
-	runtimekitConfig: RuntimeKitConfig;
+	groveConfig: GroveConfig;
 	prefix: string;
 	cookieJar = new CookieJar();
 	frames: Frame[] = [];
@@ -253,7 +253,7 @@ export class Controller {
 		void this.loadSavedCookies();
 	};
 
-	private async loadRuntimeKitWasm() {
+	private async loadGroveWasm() {
 		if (this.wasmAlreadyFetched) {
 			return;
 		}
@@ -305,7 +305,7 @@ export class Controller {
 					];
 				}
 
-				const sjheaders = RuntimeKitHeaders.fromRawHeaders(data.initialHeaders);
+				const sjheaders = GroveHeaders.fromRawHeaders(data.initialHeaders);
 
 				const fetchresponse = await frame.fetchHandler.handleFetch({
 					initialHeaders: sjheaders,
@@ -449,14 +449,14 @@ export class Controller {
 	};
 
 	constructor(public init: ControllerInit) {
-		assertRuntimeRuntimeKitVersion();
+		assertRuntimeGroveVersion();
 		this.id = makeId();
 		this.config = deepMerge(config, init.config || {}) as Config;
-		this.runtimekitConfig = deepMerge(runtimekitConfig, runtimekitDefaultConfig);
-		this.runtimekitConfig = deepMerge(
-			this.runtimekitConfig,
-			init.runtimekitConfig || {}
-		) as RuntimeKitConfig;
+		this.groveConfig = deepMerge(groveConfig, groveDefaultConfig);
+		this.groveConfig = deepMerge(
+			this.groveConfig,
+			init.groveConfig || {}
+		) as GroveConfig;
 		this.prefix = this.config.prefix + this.id + "/";
 		this.serviceWorkerController = init.serviceworker;
 
@@ -464,7 +464,7 @@ export class Controller {
 			new Promise<void>((resolve) => {
 				this.readyResolve = resolve;
 			}),
-			this.loadRuntimeKitWasm(),
+			this.loadGroveWasm(),
 			this.loadSavedCookies(true),
 		]).then(() => undefined);
 
@@ -660,13 +660,13 @@ function base64Encode(text: string) {
 
 function yieldGetInjectScripts(
 	config: Config,
-	sjconfig: RuntimeKitConfig,
+	sjconfig: GroveConfig,
 	prefix: URL,
 	cookieJar: CookieJar,
 	codecEncode: (input: string) => string,
 	codecDecode: (input: string) => string
 ) {
-	const getInjectScripts: RuntimeKitInterface["getInjectScripts"] = (
+	const getInjectScripts: GroveInterface["getInjectScripts"] = (
 		meta,
 		handler,
 		htmlcontext,
@@ -684,14 +684,14 @@ function yieldGetInjectScripts(
 			);
 		}
 		return [
-			script(config.runtimekitPath),
+			script(config.grovePath),
 			script(prefix.href + config.virtualWasmPath),
 			script(config.injectPath),
 			script(
 				"data:text/javascript;charset=utf-8;base64," +
 					base64Encode(`
-					document.querySelectorAll("script[runtimekit-injected]").forEach(script => script.remove());
-					$runtimekitController.load({
+					document.querySelectorAll("script[grove-injected]").forEach(script => script.remove());
+					$groveController.load({
 						config: ${JSON.stringify(config)},
 						sjconfig: ${JSON.stringify(sjconfig)},
 						prefix: new URL("${prefix.href}"),
@@ -712,22 +712,22 @@ function yieldGetInjectScripts(
 export class Frame {
 	id: string;
 	prefix: string;
-	fetchHandler: RuntimeKitFetchHandler;
+	fetchHandler: GroveFetchHandler;
 	hooks: {
 		fetch: FetchHooks;
 		init: FrameInitHooks;
 		error: FrameErrorHooks;
 	};
 
-	get context(): RuntimeKitContext {
+	get context(): GroveContext {
 		return {
-			config: this.controller.runtimekitConfig,
+			config: this.controller.groveConfig,
 			prefix: new URL(this.prefix, location.href),
 			cookieJar: this.controller.cookieJar,
 			interface: {
 				getInjectScripts: yieldGetInjectScripts(
 					this.controller.config,
-					this.controller.runtimekitConfig,
+					this.controller.groveConfig,
 					new URL(this.prefix, location.href),
 					this.controller.cookieJar,
 					this.controller.config.codec.encode,
@@ -736,18 +736,18 @@ export class Frame {
 				getWorkerInjectScripts: (meta, type, script) => {
 					let str = "";
 
-					str += script(this.controller.config.runtimekitPath);
+					str += script(this.controller.config.grovePath);
 					str += script(this.prefix + this.controller.config.virtualWasmPath);
 					str += script(
 						"data:text/javascript;charset=utf-8;base64," +
 							base64Encode(`
 					(()=>{
-						const { RuntimeKitClient, CookieJar, setWasm } = $runtimekit;
+						const { GroveClient, CookieJar, setWasm } = $grove;
 
 						setWasm(Uint8Array.from(atob(self.WASM), (c) => c.charCodeAt(0)));
 						delete self.WASM;
 
-						const sjconfig = ${JSON.stringify(this.controller.runtimekitConfig)};
+						const sjconfig = ${JSON.stringify(this.controller.groveConfig)};
 						const prefix = new URL("${this.prefix}", location.href);
 
 						const context = {
@@ -759,7 +759,7 @@ export class Frame {
 							},
 						};
 
-						const client = new RuntimeKitClient(globalThis, {
+						const client = new GroveClient(globalThis, {
 							context,
 							transport: null,
 						});
@@ -786,7 +786,7 @@ export class Frame {
 		this.id = makeId();
 		this.prefix = this.controller.prefix + this.id + "/";
 
-		this.fetchHandler = new RuntimeKitFetchHandler({
+		this.fetchHandler = new GroveFetchHandler({
 			crossOriginIsolated: self.crossOriginIsolated,
 			context: this.context,
 			transport: controller.transport,

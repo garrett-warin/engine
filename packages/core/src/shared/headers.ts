@@ -1,6 +1,6 @@
 import { RawHeaders } from "@mercuryworkshop/proxy-transports";
 
-export class RuntimeKitHeaders {
+export class GroveHeaders {
 	headers = {};
 
 	set(key: string, v: string) {
@@ -42,8 +42,8 @@ export class RuntimeKitHeaders {
 		return native;
 	}
 
-	static fromRawHeaders(raw: RawHeaders): RuntimeKitHeaders {
-		const h = new RuntimeKitHeaders();
+	static fromRawHeaders(raw: RawHeaders): GroveHeaders {
+		const h = new GroveHeaders();
 		for (const [k, v] of raw) {
 			if (h.has(k)) {
 				// console.debug(
@@ -56,8 +56,8 @@ export class RuntimeKitHeaders {
 		return h;
 	}
 
-	static fromNativeHeaders(native: Headers): RuntimeKitHeaders {
-		const h = new RuntimeKitHeaders();
+	static fromNativeHeaders(native: Headers): GroveHeaders {
+		const h = new GroveHeaders();
 		for (const [k, v] of native.entries()) {
 			h.set(k, v);
 		}
@@ -65,8 +65,8 @@ export class RuntimeKitHeaders {
 		return h;
 	}
 
-	clone(): RuntimeKitHeaders {
-		const newh = new RuntimeKitHeaders();
+	clone(): GroveHeaders {
+		const newh = new GroveHeaders();
 		for (const k in this.headers) {
 			newh.set(k, this.headers[k]);
 		}

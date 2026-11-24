@@ -1,15 +1,15 @@
 import { iswindow } from "@client/entry";
-import { RUNTIMEKITCLIENT } from "@/symbols";
-import { RuntimeKitClient } from "@client/index";
+import { GROVECLIENT } from "@/symbols";
+import { GroveClient } from "@client/index";
 // import { argdbg } from "@client/shared/err";
 import { Object_defineProperty } from "@/shared/snapshot";
 
-export function createWrapFn(client: RuntimeKitClient, self: GlobalThis) {
+export function createWrapFn(client: GroveClient, self: GlobalThis) {
 	let wrappedParent: GlobalThis | null = null;
 	let wrappedTop: GlobalThis | null = null;
 	if (iswindow) {
 		try {
-			if (RUNTIMEKITCLIENT in self.parent) {
+			if (GROVECLIENT in self.parent) {
 				// ... then we're in a subframe, and the parent frame is also in a proxy context, so we should return its proxy
 				wrappedParent = self.parent;
 			} else {
@@ -20,7 +20,7 @@ export function createWrapFn(client: RuntimeKitClient, self: GlobalThis) {
 			// accessing self.parent can throw if it's cross-origin, in which case we should also pretend we aren't nested
 			wrappedParent = self;
 		}
-		// instead of returning top, we need to return the uppermost parent that's inside a runtimekit context
+		// instead of returning top, we need to return the uppermost parent that's inside a grove context
 		let current = self;
 		for (;;) {
 			const test = current.parent.self;
@@ -28,7 +28,7 @@ export function createWrapFn(client: RuntimeKitClient, self: GlobalThis) {
 
 			try {
 				// ... then `test` represents a window outside of the proxy context, and therefore `current` is the topmost window in the proxy context
-				if (!(RUNTIMEKITCLIENT in test)) break;
+				if (!(GROVECLIENT in test)) break;
 			} catch {
 				// accessing test can throw if it's cross-origin, in which case we should also break
 				break;
@@ -56,7 +56,7 @@ export function createWrapFn(client: RuntimeKitClient, self: GlobalThis) {
 }
 
 export const order = 4;
-export default function (client: RuntimeKitClient, self: GlobalThis) {
+export default function (client: GroveClient, self: GlobalThis) {
 	Object_defineProperty(self, client.config.globals.wrapfn, {
 		value: client.wrapfn,
 		writable: false,
@@ -166,7 +166,7 @@ export default function (client: RuntimeKitClient, self: GlobalThis) {
 				if (v === self.top) debugger;
 			}
 		} else if (t === "string") {
-			if (v.includes("runtimekit")) debugger;
+			if (v.includes("grove")) debugger;
 			if (v.includes("~/sj")) debugger;
 			if (v.includes(location.origin)) debugger;
 		}
@@ -175,7 +175,7 @@ export default function (client: RuntimeKitClient, self: GlobalThis) {
 	};
 
 	// location = "..." can't be rewritten as wrapfn(location) = ..., so instead it will actually be rewritten as
-	// ((t)=>$runtimekit$tryset(location,"+=",t)||location+=t)(...);
+	// ((t)=>$grove$tryset(location,"+=",t)||location+=t)(...);
 	// it has to be a discrete function because there's always the possibility that "location" is a local variable
 	// we have to use an IIFE to avoid duplicating side-effects in the getter
 	Object_defineProperty(self, client.config.globals.trysetfn, {

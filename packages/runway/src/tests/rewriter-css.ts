@@ -2,7 +2,7 @@ import {
 	rewriteCss,
 	rewriteUrl,
 	unrewriteCss,
-} from "@mercuryworkshop/runtimekit/bundled";
+} from "@mercuryworkshop/grove/bundled";
 import { directTest, type Test } from "../testcommon.ts";
 
 function createRewriteContext() {

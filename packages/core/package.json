@@ -1,11 +1,11 @@
 {
-	"name": "@mercuryworkshop/runtimekit",
+	"name": "@mercuryworkshop/grove",
 	"version": "2.0.67-alpha.2",
 	"license": "AGPL-3.0-only",
 	"description": "An experimental web proxy that aims to be the successor to Ultraviolet",
 	"type": "module",
-	"main": "./dist/runtimekit-external.mjs",
-	"module": "./dist/runtimekit-external.mjs",
+	"main": "./dist/grove-external.mjs",
+	"module": "./dist/grove-external.mjs",
 	"types": "./dist/types/typesEntry.d.ts",
 	"repository": {
 		"type": "git",
@@ -22,15 +22,15 @@
 	"exports": {
 		".": {
 			"types": "./dist/types/typesEntry.d.ts",
-			"default": "./dist/runtimekit-external.mjs"
+			"default": "./dist/grove-external.mjs"
 		},
 		"./bundled": {
 			"types": "./dist/types/index.d.ts",
-			"default": "./dist/runtimekit.mjs"
+			"default": "./dist/grove.mjs"
 		},
 		"./bundled-wasm": {
 			"types": "./dist/types/index.d.ts",
-			"default": "./dist/runtimekit_bundled.mjs"
+			"default": "./dist/grove_bundled.mjs"
 		},
 		"./path": {
 			"types": "./lib/index.d.ts",

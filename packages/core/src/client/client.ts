@@ -3,7 +3,7 @@ import {
 	ProxyTransport,
 	RawHeaders,
 } from "@mercuryworkshop/proxy-transports";
-import { RUNTIMEKITCLIENT } from "@/symbols";
+import { GROVECLIENT } from "@/symbols";
 import { getOwnPropertyDescriptorHandler } from "@client/helpers";
 import { createLocationProxy } from "@client/location";
 import { createWrapFn } from "@client/shared/wrap";
@@ -17,12 +17,12 @@ import {
 import {
 	flagEnabled,
 	HtmlRewriterHooks,
-	RuntimeKitContext,
-	RuntimeKitHeaders,
+	GroveContext,
+	GroveHeaders,
 } from "@/shared";
 import { iswindow } from "./entry";
 import { SingletonBox } from "./singletonbox";
-import { RuntimeKitConfig } from "@/types";
+import { GroveConfig } from "@/types";
 import { Tap } from "@/Tap";
 import {
 	type CookieSyncEntry,
@@ -67,15 +67,15 @@ type ProxyApplyThis<T extends string> =
 			: unknown
 		: ThisParameterType<Extract<GlobalTraverse<T>, AnyFunction>>;
 
-export type RuntimeKitClientInit = {
-	context: RuntimeKitContext;
+export type GroveClientInit = {
+	context: GroveContext;
 	transport: ProxyTransport;
 	sendSetCookie: (
 		cookies: CookieSyncEntry[],
 		options?: CookieSyncOptions
 	) => Promise<void>;
 	shouldBlockMessageEvent?: (ev: MessageEvent) => boolean;
-	hookSubcontext: (self: Self, frame?: HTMLIFrameElement) => RuntimeKitClient;
+	hookSubcontext: (self: Self, frame?: HTMLIFrameElement) => GroveClient;
 	initHeaders: RawHeaders;
 	history: TrackedHistoryState[];
 };
@@ -148,11 +148,11 @@ export type Trap<T extends string> = {
 	set?: (ctx: TrapCtx<T>, v: GlobalTraverse<T>) => void;
 };
 
-export type RuntimeKitModule = {
-	enabled: (client: RuntimeKitClient) => boolean | undefined;
-	disabled: (client: RuntimeKitClient, self: GlobalThis) => void | undefined;
+export type GroveModule = {
+	enabled: (client: GroveClient) => boolean | undefined;
+	disabled: (client: GroveClient, self: GlobalThis) => void | undefined;
 	order: number | undefined;
-	default: (client: RuntimeKitClient, self: GlobalThis) => void;
+	default: (client: GroveClient, self: GlobalThis) => void;
 };
 
 function findBox(global: Window, seen: Window[]): SingletonBox | null {
@@ -160,8 +160,8 @@ function findBox(global: Window, seen: Window[]): SingletonBox | null {
 	seen.push(global);
 
 	try {
-		if ((RUNTIMEKITCLIENT in global) as any) {
-			return global[RUNTIMEKITCLIENT].box;
+		if ((GROVECLIENT in global) as any) {
+			return global[GROVECLIENT].box;
 		}
 	} catch {}
 
@@ -192,7 +192,7 @@ function findBox(global: Window, seen: Window[]): SingletonBox | null {
 	return null;
 }
 
-export class RuntimeKitClient {
+export class GroveClient {
 	locationProxy: any;
 	indirectEval: any;
 	serviceWorker: ServiceWorkerContainer;
@@ -217,13 +217,13 @@ export class RuntimeKitClient {
 
 	box: SingletonBox;
 
-	context: RuntimeKitContext;
+	context: GroveContext;
 
-	initHeaders: RuntimeKitHeaders;
+	initHeaders: GroveHeaders;
 
 	history: TrackedHistoryState[];
 
-	private flagCache = new _Map<keyof RuntimeKitConfig["flags"], boolean>();
+	private flagCache = new _Map<keyof GroveConfig["flags"], boolean>();
 	// Channels crossing an explicitly reviewed native opaque frame boundary.
 	nativeMessagePorts = new WeakSet<MessagePort>();
 	nativePortPeers = new WeakMap<MessagePort, MessagePort>();
@@ -238,11 +238,11 @@ export class RuntimeKitClient {
 
 	constructor(
 		public global: GlobalThis,
-		public init: RuntimeKitClientInit
+		public init: GroveClientInit
 	) {
-		if (RUNTIMEKITCLIENT in global) {
+		if (GROVECLIENT in global) {
 			dbg.error(
-				"attempted to initialize a runtimekit client, but one is already loaded - this is very bad"
+				"attempted to initialize a grove client, but one is already loaded - this is very bad"
 			);
 			throw new Error();
 		}
@@ -262,7 +262,7 @@ export class RuntimeKitClient {
 
 		this.context = init.context;
 		if (init.initHeaders)
-			this.initHeaders = RuntimeKitHeaders.fromRawHeaders(init.initHeaders);
+			this.initHeaders = GroveHeaders.fromRawHeaders(init.initHeaders);
 		this.history = init.history;
 		this.context.hooks = {
 			rewriter: this.hooks.rewriter,
@@ -273,7 +273,7 @@ export class RuntimeKitClient {
 		this.serviceWorker = this.global.navigator.serviceWorker;
 
 		if (iswindow) {
-			global.document[RUNTIMEKITCLIENT] = this;
+			global.document[GROVECLIENT] = this;
 		}
 
 		this.indirectEval = createIndirectEval(this);
@@ -396,29 +396,29 @@ export class RuntimeKitClient {
 				}
 
 				try {
-					// find the topmost frame that's controlled by runtimekit, stopping before the real top frame
+					// find the topmost frame that's controlled by grove, stopping before the real top frame
 					while (currentWin.parent.window !== currentWin.window) {
-						if (!currentWin.parent.window[RUNTIMEKITCLIENT]) break;
+						if (!currentWin.parent.window[GROVECLIENT]) break;
 						currentWin = currentWin.parent.window;
 					}
 				} catch {
 					// doesn't matter if it throws here just means we found the topmost one
 				}
 
-				const curclient = currentWin[RUNTIMEKITCLIENT];
+				const curclient = currentWin[GROVECLIENT];
 				const frame = curclient.descriptors.get(
 					"window.frameElement",
 					currentWin
 				);
 				if (!frame) {
-					// we're inside an iframe, but the top frame is runtimekit-controlled and top level, so we can't get a top frame name
+					// we're inside an iframe, but the top frame is grove-controlled and top level, so we can't get a top frame name
 					// or we're cross-origin and frameElement doesn't exist. that's a TODO because this won't work
 					return null;
 				}
 				if (!frame.name) {
-					// the top frame is runtimekit-controlled, but it has no name. this is user error
+					// the top frame is grove-controlled, but it has no name. this is user error
 					dbg.error(
-						"YOU NEED TO USE `new RuntimeKitFrame()`! DIRECT IFRAMES WILL NOT WORK"
+						"YOU NEED TO USE `new GroveFrame()`! DIRECT IFRAMES WILL NOT WORK"
 					);
 
 					return null;
@@ -442,23 +442,23 @@ export class RuntimeKitClient {
 					}
 
 					const parentWin = client.global.parent.window;
-					if (parentWin[RUNTIMEKITCLIENT]) {
-						// we're inside an iframe, and the parent is runtimekit-controlled
-						const parentClient = parentWin[RUNTIMEKITCLIENT];
+					if (parentWin[GROVECLIENT]) {
+						// we're inside an iframe, and the parent is grove-controlled
+						const parentClient = parentWin[GROVECLIENT];
 						const frame = parentClient.descriptors.get(
 							"window.frameElement",
 							parentWin
 						);
 
 						if (!frame) {
-							// parent is runtimekit controlled and top-level. there is no parent frame name
+							// parent is grove controlled and top-level. there is no parent frame name
 							return null;
 						}
 
 						if (!frame.name) {
-							// the parent frame is runtimekit-controlled, but it has no name. this is user error
+							// the parent frame is grove-controlled, but it has no name. this is user error
 							dbg.error(
-								"YOU NEED TO USE `new RuntimeKitFrame()`! DIRECT IFRAMES WILL NOT WORK"
+								"YOU NEED TO USE `new GroveFrame()`! DIRECT IFRAMES WILL NOT WORK"
 							);
 
 							return null;
@@ -466,16 +466,16 @@ export class RuntimeKitClient {
 
 						return frame.name;
 					} else {
-						// we're inside an iframe, and the parent is not runtimekit-controlled
+						// we're inside an iframe, and the parent is not grove-controlled
 						// return our own frame name
 						const frame = client.descriptors.get(
 							"window.frameElement",
 							client.global
 						);
 						if (!frame.name) {
-							// the parent frame is not runtimekit-controlled, so we can't get a parent frame name
+							// the parent frame is not grove-controlled, so we can't get a parent frame name
 							dbg.error(
-								"YOU NEED TO USE `new RuntimeKitFrame()`! DIRECT IFRAMES WILL NOT WORK"
+								"YOU NEED TO USE `new GroveFrame()`! DIRECT IFRAMES WILL NOT WORK"
 							);
 
 							return null;
@@ -521,7 +521,7 @@ export class RuntimeKitClient {
 		};
 		this.locationProxy = createLocationProxy(this, global);
 
-		global[RUNTIMEKITCLIENT] = this;
+		global[GROVECLIENT] = this;
 	}
 
 	/** Apply document injection init when a client was already installed (e.g. early contentWindow). */
@@ -530,7 +530,7 @@ export class RuntimeKitClient {
 		history: TrackedHistoryState[];
 		cookies?: string;
 	}) {
-		this.initHeaders = RuntimeKitHeaders.fromRawHeaders(init.initHeaders);
+		this.initHeaders = GroveHeaders.fromRawHeaders(init.initHeaders);
 		this.history = init.history;
 		if (init.cookies !== undefined) {
 			this.context.cookieJar.load(init.cookies);
@@ -542,10 +542,10 @@ export class RuntimeKitClient {
 			recursive: true,
 		});
 
-		const modules: RuntimeKitModule[] = [];
+		const modules: GroveModule[] = [];
 
 		for (const key of context.keys()) {
-			const module = context(key) as RuntimeKitModule;
+			const module = context(key) as GroveModule;
 			if (!key.endsWith(".ts")) continue;
 			if (
 				(key.startsWith("./dom/") && "window" in this.global) ||
@@ -661,7 +661,7 @@ export class RuntimeKitClient {
 				null,
 				`"use strict";
 
-// RUNTIMEKIT FUNCTION INTERCEPT
+// GROVE FUNCTION INTERCEPT
 // target: ${fnName}
 // frame: ${windowName}
 // location: ${location}
@@ -776,8 +776,8 @@ return { apply, construct };
 						if (this.box.instanceof(err.stack, "Object")) {
 							//i'm not going to explain this
 							err.stack = err.stack.stack;
-							// eslint-disable-next-line runtimekit-core/no-globals
-							console.error("ERROR FROM RUNTIMEKIT INTERNALS", err);
+							// eslint-disable-next-line grove-core/no-globals
+							console.error("ERROR FROM GROVE INTERNALS", err);
 							if (!this.flagEnabled("allowFailedIntercepts")) {
 								Error.prepareStackTrace = pst;
 								throw err;
@@ -908,7 +908,7 @@ return { apply, construct };
 		return unrewriteUrl(url, this.context);
 	}
 
-	flagEnabled(flag: keyof RuntimeKitConfig["flags"]): boolean {
+	flagEnabled(flag: keyof GroveConfig["flags"]): boolean {
 		const cached = this.flagCache.get(flag);
 		if (cached !== undefined) return cached;
 
@@ -917,7 +917,7 @@ return { apply, construct };
 		return result;
 	}
 
-	get config(): RuntimeKitConfig {
+	get config(): GroveConfig {
 		return this.context.config;
 	}
 }

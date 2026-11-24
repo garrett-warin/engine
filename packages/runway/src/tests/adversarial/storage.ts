@@ -73,7 +73,7 @@ export default [
 			const seen = [];
 			for (const k in localStorage) seen.push(k);
 			assert(seen.includes(P + "alpha"), "for-in must yield the page's key, got " + JSON.stringify(seen));
-			assert(!seen.some((k) => k.includes("runtimekit")),
+			assert(!seen.some((k) => k.includes("grove")),
 				"for-in must not leak namespaced keys, got " + JSON.stringify(seen));
 		`
 	),

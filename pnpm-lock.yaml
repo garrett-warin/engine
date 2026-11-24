@@ -99,7 +99,7 @@ importers:
       '@mercuryworkshop/proxy-transports':
         specifier: 'catalog:'
         version: 1.0.2
-      '@mercuryworkshop/runtimekit-controller':
+      '@mercuryworkshop/grove-controller':
         specifier: workspace:*
         version: link:../controller
 
@@ -115,7 +115,7 @@ importers:
       '@mercuryworkshop/rpc':
         specifier: workspace:*
         version: link:../rpc
-      '@mercuryworkshop/runtimekit':
+      '@mercuryworkshop/grove':
         specifier: workspace:*
         version: link:../core
       '@types/serviceworker':
@@ -180,7 +180,7 @@ importers:
         specifier: ^5.9.3
         version: 5.9.3
 
-  packages/create-proxy-app:
+  packages/create-grove-app:
     dependencies:
       '@clack/core':
         specifier: ^0.3.4
@@ -222,13 +222,13 @@ importers:
       '@mercuryworkshop/libcurl-transport':
         specifier: 'catalog:'
         version: 2.0.5
-      '@mercuryworkshop/runtimekit':
+      '@mercuryworkshop/grove':
         specifier: workspace:*
         version: link:../core
-      '@mercuryworkshop/runtimekit-controller':
+      '@mercuryworkshop/grove-controller':
         specifier: workspace:*
         version: link:../controller
-      '@mercuryworkshop/runtimekit-utils':
+      '@mercuryworkshop/grove-utils':
         specifier: workspace:*
         version: link:../utils
       dreamland:
@@ -252,10 +252,10 @@ importers:
       '@mercuryworkshop/libcurl-transport':
         specifier: 'catalog:'
         version: 2.0.5
-      '@mercuryworkshop/runtimekit':
+      '@mercuryworkshop/grove':
         specifier: workspace:*
         version: link:../core
-      '@mercuryworkshop/runtimekit-controller':
+      '@mercuryworkshop/grove-controller':
         specifier: workspace:*
         version: link:../controller
       '@mercuryworkshop/wisp-js':
@@ -292,10 +292,10 @@ importers:
 
   packages/utils:
     devDependencies:
-      '@mercuryworkshop/runtimekit':
+      '@mercuryworkshop/grove':
         specifier: workspace:*
         version: link:../core
-      '@mercuryworkshop/runtimekit-controller':
+      '@mercuryworkshop/grove-controller':
         specifier: workspace:*
         version: link:../controller
       '@types/serviceworker':

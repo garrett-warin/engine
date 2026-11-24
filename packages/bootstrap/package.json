@@ -12,7 +12,7 @@
 		"directory": "packages/bootstrap"
 	},
 	"scripts": {
-		"build": "cd ../.. && rspack build --mode production --configName runtimekit-bootstrap",
+		"build": "cd ../.. && rspack build --mode production --configName grove-bootstrap",
 		"prepack": "pnpm build",
 		"prepublishOnly": "npx only-allow pnpm",
 		"pub": "pnpm publish --no-git-checks --access public"
@@ -25,7 +25,7 @@
 		"@mercuryworkshop/epoxy-transport": "catalog:",
 		"@mercuryworkshop/libcurl-transport": "catalog:",
 		"@mercuryworkshop/proxy-transports": "catalog:",
-		"@mercuryworkshop/runtimekit-controller": "workspace:*"
+		"@mercuryworkshop/grove-controller": "workspace:*"
 	},
 	"files": [
 		"dist"

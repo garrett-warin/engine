@@ -2,6 +2,6 @@
 
 const { resolve } = require("node:path");
 
-const runtimekitPath = resolve(__dirname, "..", "dist");
+const grovePath = resolve(__dirname, "..", "dist");
 
-exports.runtimekitPath = runtimekitPath;
+exports.grovePath = grovePath;

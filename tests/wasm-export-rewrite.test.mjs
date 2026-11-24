@@ -12,8 +12,8 @@ test('exported module factories and declarations receive import/meta/global rewr
   await sanitize(join(temp,'wasm.js'),join(temp,'wasm.mjs'));
   const snippet=join(temp,'snippets/wasm-4b0f351a8e6eeb46/inline0.js');await sanitize(snippet,snippet);
   const {initSync,Rewriter}=await import(pathToFileURL(join(temp,'wasm.mjs')));
-  initSync({module:new WebAssembly.Module(await readFile('app/vendor/runtimekit.wasm'))});
-  const config={prefix:'/fixture/',wrapfn:'$runtimekit$wrap',wrappropertybase:'$runtimekit__',wrappropertyfn:'$runtimekit$prop',cleanrestfn:'$runtimekit$clean',importfn:'$runtimekit$import',rewritefn:'$runtimekit$rewrite',wrappostmessagefn:'$runtimekit$wrappostmessage',metafn:'$runtimekit$meta',pushsourcemapfn:'$runtimekit$pushsourcemap',trysetfn:'$runtimekit$tryset',templocid:'$runtimekit$temploc',tempunusedid:'$runtimekit$tempunused'};
+  initSync({module:new WebAssembly.Module(await readFile('app/vendor/grove.wasm'))});
+  const config={prefix:'/fixture/',wrapfn:'$grove$wrap',wrappropertybase:'$grove__',wrappropertyfn:'$grove$prop',cleanrestfn:'$grove$clean',importfn:'$grove$import',rewritefn:'$grove$rewrite',wrappostmessagefn:'$grove$wrappostmessage',metafn:'$grove$meta',pushsourcemapfn:'$grove$pushsourcemap',trysetfn:'$grove$tryset',templocid:'$grove$temploc',tempunusedid:'$grove$tempunused'};
   const flags={sourcemaps:true,captureErrors:false,rtimeitize:false,disableComputedWrap:false,destructureRewrites:true};
   for(const source of [
    'export const __rspack_esm_id=1;export const __rspack_esm_ids=[1];export const __webpack_modules__={route:()=>import(route.module)};',
@@ -21,8 +21,8 @@ test('exported module factories and declarations receive import/meta/global rewr
    'export class Loader{load(path){return import(path)}}',
    'export const loader=path=>import(path)',
   ]) {
-   const rewriter=new Rewriter();try{const out=rewriter.rewrite_js(config,flags,url=>encodeURIComponent(url),source,'https://fixture.test/','https://fixture.test/module.js',true);assert.equal(out.errors.length,0);assert.match(new TextDecoder().decode(out.js),/\$runtimekit\$import\(/);}finally{rewriter.free();}
+   const rewriter=new Rewriter();try{const out=rewriter.rewrite_js(config,flags,url=>encodeURIComponent(url),source,'https://fixture.test/','https://fixture.test/module.js',true);assert.equal(out.errors.length,0);assert.match(new TextDecoder().decode(out.js),/\$grove\$import\(/);}finally{rewriter.free();}
   }
-  const rewriter=new Rewriter();try{const out=rewriter.rewrite_js(config,flags,url=>encodeURIComponent(url),'export const meta=import.meta.url;export const host=window.location.href;','https://fixture.test/','https://fixture.test/module.js',true);const text=new TextDecoder().decode(out.js);assert.match(text,/\$runtimekit\$meta\(/);assert.match(text,/\$runtimekit__location/);}finally{rewriter.free();}
+  const rewriter=new Rewriter();try{const out=rewriter.rewrite_js(config,flags,url=>encodeURIComponent(url),'export const meta=import.meta.url;export const host=window.location.href;','https://fixture.test/','https://fixture.test/module.js',true);const text=new TextDecoder().decode(out.js);assert.match(text,/\$grove\$meta\(/);assert.match(text,/\$grove__location/);}finally{rewriter.free();}
  }finally{await rm(temp,{recursive:true,force:true});}
 });

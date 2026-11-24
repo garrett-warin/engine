@@ -1,9 +1,9 @@
-// entrypoint for runtimekit.client.js
+// entrypoint for grove.client.js
 
-import { RuntimeKitContext, RuntimeKitInterface } from "@/shared/index";
-import { RUNTIMEKITCLIENT } from "@/symbols";
-import { RuntimeKitClient } from "@client/index";
-import { RuntimeKitConfig } from "@/types";
+import { GroveContext, GroveInterface } from "@/shared/index";
+import { GROVECLIENT } from "@/symbols";
+import { GroveClient } from "@client/index";
+import { GroveConfig } from "@/types";
 
 export const iswindow = "window" in globalThis && window instanceof Window;
 export const isworker = "WorkerGlobalScope" in globalThis;

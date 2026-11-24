@@ -7,8 +7,8 @@ import { basicTest } from "../../testcommon.ts";
 // not.
 //
 // `var location = …` currently becomes
-//   var $runtimekit$temploc = …; $runtimekit$tryset(location,"=",$runtimekit$temploc)
-//     || (location = $runtimekit$temploc);
+//   var $grove$temploc = …; $grove$tryset(location,"=",$grove$temploc)
+//     || (location = $grove$temploc);
 // so the local binding is renamed out from under the rest of the function and
 // the value is pushed at the *global* `location` instead. Every later read of
 // the page's own variable resolves to the location proxy.
@@ -63,7 +63,7 @@ export default [
 	// var location
 	// ------------------------------------------------------------------
 	basicTest({
-		// KNOWN FAILURE: the declaration is renamed to $runtimekit$temploc and the
+		// KNOWN FAILURE: the declaration is renamed to $grove$temploc and the
 		// initializer is assigned to the real global location instead.
 		name: "shadowing-var-location",
 		js: `

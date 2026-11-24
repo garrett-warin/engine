@@ -1,6 +1,6 @@
 import * as Types from "./index";
 declare global {
-	const $runtimekit: typeof Types;
+	const $grove: typeof Types;
 }
 
 export * from "./index";

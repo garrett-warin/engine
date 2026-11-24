@@ -29,7 +29,7 @@ async function project() {
 	const program = new Command();
 	program.name("Create Proxy");
 	program.description(
-		"A CLI to easily get started with creating a RuntimeKit or Ultraviolet Proxy"
+		"A CLI to easily get started with creating a Grove or Ultraviolet Proxy"
 	);
 	program.argument(
 		"[dir]",
@@ -179,7 +179,7 @@ async function project() {
 					"commit",
 					"-m",
 					"Initial Commit from Create Proxy App",
-					'--author="create-proxy-app[bot] <cpa@mercurywork.shop>"',
+					'--author="create-grove-app[bot] <cpa@mercurywork.shop>"',
 				],
 				{ cwd: initial.path }
 			);

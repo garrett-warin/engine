@@ -1,7 +1,7 @@
-import { RuntimeKitClient } from "@client/index";
+import { GroveClient } from "@client/index";
 import { Object_keys, Reflect_get, Reflect_ownKeys } from "@/shared/snapshot";
 
-export default function (client: RuntimeKitClient, self: Self) {
+export default function (client: GroveClient, self: Self) {
 	const handler: ProxyHandler<Storage> = {
 		get(target, prop) {
 			switch (prop) {

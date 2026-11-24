@@ -1,4 +1,4 @@
-import { RuntimeKitContext } from "@/shared";
+import { GroveContext } from "@/shared";
 import { rewriteJs } from "@rewriters/js";
 import { QP } from "@/fetch/parse";
 
@@ -50,7 +50,7 @@ function tryCanParseURL(url: string, origin?: string | URL): _URL | null {
 
 export function rewriteBlob(
 	url: string,
-	context: RuntimeKitContext,
+	context: GroveContext,
 	meta: URLMeta
 ) {
 	const blob = new _URL(url.substring("blob:".length));
@@ -60,7 +60,7 @@ export function rewriteBlob(
 
 export function unrewriteBlob(
 	url: string,
-	context: RuntimeKitContext,
+	context: GroveContext,
 	_meta: URLMeta
 ) {
 	const blob = new _URL(url.substring("blob:".length));
@@ -119,7 +119,7 @@ function dataToBlob(url: string) {
 
 export function rewriteUrl(
 	url: string | URL,
-	context: RuntimeKitContext,
+	context: GroveContext,
 	meta: URLMeta,
 	options?: RewriteUrlOptions
 ) {
@@ -223,7 +223,7 @@ export function rewriteUrl(
 	}
 }
 
-export function unrewriteUrl(url: string | URL, context: RuntimeKitContext) {
+export function unrewriteUrl(url: string | URL, context: GroveContext) {
 	url = String(url);
 	if (String_startsWith(url, "javascript:")) {
 		//TODO
@@ -278,7 +278,7 @@ export function unrewriteUrl(url: string | URL, context: RuntimeKitContext) {
 	}
 }
 
-export function parseImportMapRoute(url: URL, context: RuntimeKitContext) {
+export function parseImportMapRoute(url: URL, context: GroveContext) {
 	const prefix = context.prefix.href + "~module/";
 	if (!String_startsWith(url.href, prefix)) return null;
 	const path = url.pathname.slice(new _URL(prefix).pathname.length);

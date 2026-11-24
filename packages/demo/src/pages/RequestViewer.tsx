@@ -10,9 +10,9 @@ import {
 	isJavascriptMimeType,
 	isXmlMimeType,
 	parseMimeType,
-	Plugin as RuntimeKitPlugin,
-} from "@mercuryworkshop/runtimekit";
-import type { Frame } from "@mercuryworkshop/runtimekit-controller";
+	Plugin as GrovePlugin,
+} from "@mercuryworkshop/grove";
+import type { Frame } from "@mercuryworkshop/grove-controller";
 import { demoSettingsStore } from "../store";
 import Monaco from "../components/Monaco";
 import { browserState } from "./BrowserView";
@@ -815,7 +815,7 @@ const RequestViewer: Component<
 	const initPlugin = (frame: Frame) => {
 		if (this.pluginReady) return;
 		this.pluginReady = true;
-		const plugin = new RuntimeKitPlugin("demo-request-viewer");
+		const plugin = new GrovePlugin("demo-request-viewer");
 		plugin.tap(frame.hooks.fetch.request, (context, props) => {
 			const id = `${Date.now()}-${++this.requestSeq}`;
 			const url = props.url?.toString?.() ?? context.parsed.url.toString();

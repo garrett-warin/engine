@@ -7,12 +7,12 @@ import {
 import {
 	CatchEscapedLinksPlugin,
 	UrlWatcherPlugin,
-} from "@mercuryworkshop/runtimekit-utils";
-import { versionInfo } from "@mercuryworkshop/runtimekit";
+} from "@mercuryworkshop/grove-utils";
+import { versionInfo } from "@mercuryworkshop/grove";
 import { cachePlugin, controller } from "..";
 import { demoSettingsStore } from "../store";
 import homepage from "./homepage.html?raw";
-import type { Frame } from "@mercuryworkshop/runtimekit-controller";
+import type { Frame } from "@mercuryworkshop/grove-controller";
 
 export const browserState = createState({
 	url: demoSettingsStore.homeUrl,
@@ -165,15 +165,15 @@ const BrowserView: Component<
 		});
 		let realHomepage = homepage;
 		realHomepage = realHomepage.replaceAll(
-			"{{RUNTIMEKIT_VERSION}}",
+			"{{GROVE_VERSION}}",
 			String(versionInfo.version)
 		);
 		realHomepage = realHomepage.replaceAll(
-			"{{RUNTIMEKIT_BUILD}}",
+			"{{GROVE_BUILD}}",
 			String(versionInfo.build)
 		);
 		realHomepage = realHomepage.replaceAll(
-			"{{RUNTIMEKIT_DATE_PRETTY}}",
+			"{{GROVE_DATE_PRETTY}}",
 			new Date(versionInfo.date).toLocaleString(undefined, {
 				dateStyle: "short",
 				timeStyle: "short",

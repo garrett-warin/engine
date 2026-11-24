@@ -1,13 +1,13 @@
 import { css, type Component } from "dreamland/core";
-import type { Frame } from "@mercuryworkshop/runtimekit-controller";
+import type { Frame } from "@mercuryworkshop/grove-controller";
 import {
 	BareResponse,
 	Plugin,
 	rewriteUrl,
-	RuntimeKitFetchHandler,
-	RuntimeKitHeaders,
-	type RuntimeKitFetchRequest,
-} from "@mercuryworkshop/runtimekit";
+	GroveFetchHandler,
+	GroveHeaders,
+	type GroveFetchRequest,
+} from "@mercuryworkshop/grove";
 import { cachePlugin, controller } from "..";
 import Monaco from "../components/Monaco";
 
@@ -25,7 +25,7 @@ type PlaygroundProject = {
 	files: Record<string, string>;
 };
 
-const PLAYGROUND_STORAGE_KEY = "runtimekit-demo-playground-projects-v1";
+const PLAYGROUND_STORAGE_KEY = "grove-demo-playground-projects-v1";
 
 const DEFAULT_FILES: PlaygroundFile[] = [
 	{
@@ -35,12 +35,12 @@ const DEFAULT_FILES: PlaygroundFile[] = [
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>RuntimeKit Playground</title>
+    <title>Grove Playground</title>
     <link rel="stylesheet" href="/style.css" />
   </head>
   <body>
     <main>
-      <h1>RuntimeKit Playground</h1>
+      <h1>Grove Playground</h1>
       <p>Edit files on the left, then reload the preview.</p>
       <button id="btn">Click me</button>
       <pre id="out"></pre>
@@ -81,7 +81,7 @@ button {
 const button = document.getElementById("btn");
 if (button && out) {
   button.addEventListener("click", () => {
-    out.textContent = "Hello from fakeorigin assets served via RuntimeKit request hook.";
+    out.textContent = "Hello from fakeorigin assets served via Grove request hook.";
   });
 }
 `,
@@ -441,7 +441,7 @@ const PlaygroundView: Component<
 		this.rewriteStatus = "Rewriting...";
 
 		try {
-			const handler = new RuntimeKitFetchHandler({
+			const handler = new GroveFetchHandler({
 				crossOriginIsolated: self.crossOriginIsolated,
 				context: frame.context,
 				transport: frame.controller.transport,
@@ -492,12 +492,12 @@ const PlaygroundView: Component<
 				method: "GET",
 				body: null,
 				cache: "default",
-				initialHeaders: new RuntimeKitHeaders(),
+				initialHeaders: new GroveHeaders(),
 				clientId: frame.id,
 			};
 
 			const rewritten = await handler.handleFetch(
-				request as RuntimeKitFetchRequest
+				request as GroveFetchRequest
 			);
 			handler.client.fetch = originalFetch;
 

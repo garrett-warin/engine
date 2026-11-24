@@ -3,9 +3,9 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 
 const replacements = [
-  [/SCRAMJET/g, "RUNTIMEKIT"],
-  [/Scramjet/g, "RuntimeKit"],
-  [/scramjet/g, "runtimekit"],
+  [/SCRAMJET/g, "GROVE"],
+  [/Scramjet/g, "Grove"],
+  [/scramjet/g, "grove"],
   [/SCRAM/g, "RTIME"],
   [/Scram/g, "Rtime"],
   [/scram/g, "rtime"],
@@ -103,7 +103,7 @@ await sanitize(
   "packages/bootstrap/dist/bootstrap-client.js",
   "app/vendor/bootstrap-client.js",
 );
-await sanitize("packages/core/dist/runtimekit.js", "app/vendor/runtimekit.js");
+await sanitize("packages/core/dist/grove.js", "app/vendor/grove.js");
 await sanitize(
   path.join(
     store,
@@ -113,12 +113,12 @@ await sanitize(
   "app/vendor/httpengine-client.js",
 );
 await copyFile(
-  "packages/core/dist/runtimekit.wasm",
-  "app/vendor/runtimekit.wasm",
+  "packages/core/dist/grove.wasm",
+  "app/vendor/grove.wasm",
 );
 
 for (const file of [
-  "app/vendor/runtimekit-utils.js",
+  "app/vendor/grove-utils.js",
   "app/vendor/controller.api.js",
   "app/vendor/controller.inject.js",
   "app/vendor/controller.worker.js",
@@ -128,7 +128,7 @@ for (const file of [
 
 // Keep the JavaScript glue and WebAssembly import/export names synchronized.
 // Each binary replacement has the same byte length as its source token.
-let wasm = await readFile("app/vendor/runtimekit.wasm");
+let wasm = await readFile("app/vendor/grove.wasm");
 const binaryReplacements = [
   [Buffer.from("scram"), Buffer.from("rtime")],
   [Buffer.from("SCRAM"), Buffer.from("RTIME")],
@@ -144,7 +144,7 @@ for (const [from, to] of binaryReplacements) {
     to.copy(wasm, offset);
   }
 }
-await writeFile("app/vendor/runtimekit.wasm", wasm);
+await writeFile("app/vendor/grove.wasm", wasm);
 
 const responseFiles = [
   "app/public/index.html",
@@ -152,9 +152,9 @@ const responseFiles = [
   "app/public/styles.css",
   "app/public/worker.js",
   "app/vendor/bootstrap-client.js",
-  "app/vendor/runtimekit.js",
-  "app/vendor/runtimekit.wasm",
-  "app/vendor/runtimekit-utils.js",
+  "app/vendor/grove.js",
+  "app/vendor/grove.wasm",
+  "app/vendor/grove-utils.js",
   "app/vendor/controller.api.js",
   "app/vendor/controller.inject.js",
   "app/vendor/controller.worker.js",
